@@ -182,9 +182,6 @@ require("lazy").setup({
 					base_url = "https://openrouter.ai/api/v1/completions",
 					model = "deepseek/deepseek-coder",
 					api_key = os.getenv("OPENROUTER_API_KEY"),
-					prompt = function(lines_before, lines_after)
-						return lines_before
-					end,
 				},
 				notify = true,
 				notify_callback = function(msg)
