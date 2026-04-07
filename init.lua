@@ -49,7 +49,7 @@ require("lazy").setup({
 			if not status then return end
 
 			configs.setup({
-				ensure_installed = { "rust", "lua", "bash" },
+				ensure_installed = { "rust", "lua", "bash", "python" },
 				highlight = { enable = true },
 			})
 		end
@@ -65,7 +65,7 @@ require("lazy").setup({
 		config = function()
 			require("mason").setup()
 			require("mason-lspconfig").setup({
-				ensure_installed = { "rust_analyzer", "lua_ls" }
+				ensure_installed = { "rust_analyzer", "lua_ls", "pyright" }
 			})
 			if vim.lsp.config then -- Neovim 0.8+
 				-- Configuración para Rust
@@ -83,6 +83,24 @@ require("lazy").setup({
 				-- Configuración para Lua
 				vim.lsp.config("lua_ls", {})
 				vim.lsp.enable("lua_ls")
+
+				-- Configuración para Python (Pyright)
+				vim.lsp.config("pyright", {
+					settings = {
+						pyright = {
+							disableOrganizeImports = false,
+						},
+						python = {
+							analysis = {
+								typeCheckingMode = "basic",
+								autoSearchPaths = true,
+								useLibraryCodeForTypes = true,
+							},
+						},
+					},
+				})
+				vim.lsp.enable("pyright")
+
 			else -- Neovim < 0.8
 				local lspconfig = require("lspconfig")
 				lspconfig.rust_analyzer.setup({
