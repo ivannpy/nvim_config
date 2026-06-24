@@ -2,6 +2,7 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
+-- Cargar path para que esté disponible dentro de neovim
 vim.env.PATH = vim.env.HOME .. "/.local/bin:" .. vim.env.PATH
 
 require("core.options")

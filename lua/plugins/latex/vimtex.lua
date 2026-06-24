@@ -9,7 +9,11 @@ return {
 
         -- Sincronización con Skim via neovim-remote
         vim.g.vimtex_view_skim_sync = 1       -- SyncTeX forward search al compilar
-        vim.g.vimtex_view_skim_activate = 1   -- Skim pasa a primer plano al abrir
+        vim.g.vimtex_view_skim_activate = 1   -- Skim pasa a primer plano al abri
+
+        -- Sincronización con Skim via neovim-remote
+        vim.g.vimtex_view_skim_sync = 1       -- SyncTeX forward search al compilar
+        vim.g.vimtex_view_skim_activate = 1   -- Skim pasa a primer plano al abrirr
 
         vim.g.vimtex_toc_config = {
             split_pos = "vert rightbelow",

@@ -14,9 +14,15 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
-    { import = "plugins" },
---    rocks = {
-  --      hererocks = false,
-    --    enabled = true,
-    --},
+    spec = {
+        { import = "plugins" },
+        { import = "plugins.themes" },
+        { import = "plugins.git" },
+        { import = "plugins.latex" },
+        { import = "plugins.markdown" },
+    },
+
+    checker = {
+        enabled = true,
+    },
 })

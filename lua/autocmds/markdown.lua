@@ -11,7 +11,7 @@ vim.api.nvim_create_autocmd("BufWritePost", {
     vim.fn.jobstart({
       "pandoc",
       input,
-      "--pdf-engine=pdflatex",  -- o "tectonic"
+      "--pdf-engine=pdflatex",
       "--mathjax",              -- fórmulas LaTeX correctas
       "-V", "geometry:margin=2cm",
       "-o", output,
