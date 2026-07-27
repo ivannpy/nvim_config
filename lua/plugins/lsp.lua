@@ -13,6 +13,7 @@ return {
                 "rust_analyzer",
                 "lua_ls",
                 "pyright",
+                "ruff",
                 "texlab"
             },
         })
@@ -38,11 +39,11 @@ return {
 
         vim.lsp.enable("lua_ls")
 
-        -- Configuración para Python
+        -- Configuración para Python (PyRight: tipos, diagnotics y hover)
         vim.lsp.config("pyright", {
             settings = {
                 pyright = {
-                    disableOrganizeImports = false,
+                    disableOrganizeImports = true,
                 },
                 python = {
                     analysis = {
@@ -55,6 +56,44 @@ return {
         })
 
         vim.lsp.enable("pyright")
+
+        -- Configuración para formateador Python (ruff)
+        vim.lsp.config("ruff", {
+            init_options = {
+                settings = {
+                    organizeImports = true,
+                },
+            },
+        })
+
+        vim.lsp.enable("ruff")
+
+        -- Evitar que Ruff pise el hover de Pyright (Ruff no debe manejar hover)
+        vim.api.nvim_create_autocmd("LspAttach", {
+            callback = function(args)
+                local client = vim.lsp.get_client_by_id(args.data.client_id)
+                if client == nil then return end
+                if client.name == "ruff" then
+                    client.server_capabilities.hoverProvider = false
+                end
+            end,
+            desc = "Desactivar hover de Ruff en favor de Pyright",
+        })
+
+        -- Formatear Python al guardar, usando explícitamente el cliente Ruff
+        vim.api.nvim_create_autocmd("BufWritePre", {
+            pattern = "*.py",
+            callback = function(args)
+                vim.lsp.buf.format({
+                    bufnr = args.buf,
+                    async = false,
+                    filter = function(client)
+                        return client.name == "ruff"
+                    end,
+                })
+            end,
+            desc = "Formatear Python con Ruff al guardar",
+        })
 
         -- Configuración para latexmk
         vim.lsp.config("texlab", {

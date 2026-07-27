@@ -19,6 +19,3 @@ vim.opt.foldlevel = 99
 
 -- Abrir todo al inicio
 vim.opt.foldlevelstart = 99
-
--- Usar clipboard del sistema
-vim.opt.clipboard = "unnamedplus"

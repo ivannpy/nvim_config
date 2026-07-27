@@ -25,7 +25,9 @@ vim.keymap.set("n", "<leader>e", ":Neotree toggle filesystem left<CR>", {
 
 -- Formatear código
 vim.keymap.set("n", "<leader>f", function()
-    if vim.bo.filetype == "rust" then
+    local ft = vim.bo.filetype
+
+    if ft == "rust" then
         vim.cmd("write")
 
         local file_path = vim.fn.expand("%:p")
@@ -39,13 +41,19 @@ vim.keymap.set("n", "<leader>f", function()
         end
 
         vim.cmd("edit!")
+        vim.notify("Formatted with rustfmt", vim.log.levels.INFO)
+    
+    elseif ft == "python" then
+        vim.lsp.buf.format({ async = true, timeout_ms = 5000 })
+        vim.notify("Formatted with Ruff (LSP)", vim.log.levels.INFO)
+
     else
-        vim.lsp.buf.format({
-            async = true,
-        })
+        vim.lsp.buf.format({ async = true, timeout_ms = 5000 })
+        vim.notify("Formatted via LSP", vim.log.levels.INFO)
+
     end
 end, {
-    desc = "Format code with system rustfmt",
+    desc = "Format code",
 })
 
 -- Folding
@@ -86,6 +94,13 @@ end, {
 -- LSP: Go to definition
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, {
     desc = "Goto definition",
+})
+
+-- LSP: Go to uses (references) usando Telescope
+vim.keymap.set("n", "gr", function()
+    require("telescope.builtin").lsp_references()
+end, {
+    desc = "Goto references",
 })
 
 -- LSP: Code actions
