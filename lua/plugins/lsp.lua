@@ -96,6 +96,20 @@ return {
         })
 
         -- Configuración para latexmk
+        local is_mac = vim.fn.has("macunix") == 1
+        local forward_search_config
+        if is_mac then
+            forward_search_config = {
+                executable = "/Applications/Skim.app/Contents/SharedSupport/displayline",
+                args = { "--synctex-forward", "%l:1:%f", "%p" },
+            }
+        else
+            forward_search_config = {
+                executable = "SumatraPDF",
+                args = { "-forward-search", "%f", "%l", "%p" },
+            }
+        end
+
         vim.lsp.config("texlab", {
             settings = {
                 texlab = {
@@ -110,13 +124,7 @@ return {
                         },
                         onSave = true, -- Compila automáticamente al guardar el archivo
                     },
-                    forwardSearch = {
-                        executable = "/Applications/Skim.app/Contents/SharedSupport/displayline",
-                        args = {
-                            "--synctex-forward",
-                            "%l:1:%f", "%p" },
-
-                    },
+                    forwardSearch = forward_search_config,
                     chktex = {
                         onEdit = false,
                         onOpenAndSave = false,
