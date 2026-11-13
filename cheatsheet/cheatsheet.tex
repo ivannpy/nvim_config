@@ -1,0 +1,1046 @@
+\documentclass[8pt,a4paper,landscape]{extarticle}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage[margin=1.2cm,top=1.5cm,bottom=1.5cm]{geometry}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage[table]{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{amssymb}
+\usepackage{needspace}
+\usepackage{hyperref}
+
+\definecolor{accent}{HTML}{3B5BA9}
+\definecolor{mine}{HTML}{C0392B}
+\definecolor{rowgray}{HTML}{F3F5FA}
+\hypersetup{colorlinks=true,linkcolor=accent,urlcolor=accent}
+
+\setlength{\parindent}{0pt}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.12}
+\sloppy
+\setlist{nosep,leftmargin=1.2em}
+
+\titleformat{\section}{\large\bfseries\color{accent}}{\thesection}{0.6em}{}[\vspace{-0.6em}\color{accent}\rule{\linewidth}{0.6pt}]
+\titleformat{\subsection}{\normalsize\bfseries\color{accent!80!black}}{}{0em}{}
+\titlespacing*{\section}{0pt}{1.1em}{0.5em}
+\titlespacing*{\subsection}{0pt}{0.8em}{0.2em}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textbf{Neovim cheatsheet}}
+\fancyhead[R]{\small Ivan --- \texttt{\textasciitilde/.config/nvim}}
+\fancyfoot[C]{\small\thepage}
+\fancyfoot[R]{\small nvim v0.12.6}
+\renewcommand{\headrulewidth}{0.3pt}
+
+% ---------- Macros ----------
+% \kk{...}  : tecla/comando en monoespaciado
+\newcommand{\kk}[1]{\texttt{#1}}
+\newcommand{\ld}{\texttt{<leader>}}
+\newcommand{\lld}{\texttt{<localleader>}}
+\newcommand{\bs}{\textbackslash{}}
+\newcommand{\tl}{\textasciitilde{}}
+\newcommand{\ca}{\textasciicircum{}}
+\newcommand{\bt}{\textasciigrave{}}
+\newcommand{\mk}{\textcolor{mine}{$\bigstar$}}   % definido por Ivan en su config
+
+% Tabla de tres columnas: Comando | Que hace | Donde funciona
+\newenvironment{cht}{%
+  \begin{longtable}{>{\raggedright\arraybackslash\ttfamily}p{0.27\textwidth}
+                    >{\raggedright\arraybackslash}p{0.46\textwidth}
+                    >{\raggedright\arraybackslash}p{0.21\textwidth}}
+  \rowcolor{accent}\textcolor{white}{\textbf{\rmfamily Comando / atajo}} &
+  \textcolor{white}{\textbf{Qué hace}} & \textcolor{white}{\textbf{Dónde funciona}} \\
+  \endhead
+}{\end{longtable}}
+\newcommand{\rr}[3]{#1 & #2 & #3 \\}
+\newcommand{\rg}[3]{\rowcolor{rowgray}\relax #1 & #2 & #3 \\}
+
+\let\oldsubsection\subsection
+\renewcommand{\subsection}{\Needspace{9\baselineskip}\oldsubsection}
+\let\oldsection\section
+\renewcommand{\section}{\Needspace{10\baselineskip}\oldsection}
+
+\begin{document}
+
+\begin{center}
+{\Huge\bfseries\color{accent} Neovim --- Hoja de referencia}\\[0.4em]
+{\large Configuración de Ivan --- \textbf{Neovim v0.12.6} (Release, LuaJIT 2.1)}\\[0.2em]
+{\small Generada el 13 de noviembre de 2026 y verificada contra los plugins instalados en esta máquina}
+\end{center}
+
+\subsection*{Cómo leer esta hoja}
+\begin{itemize}
+  \item \textbf{\ld} = \textbf{Espacio} y \textbf{\lld} = \textbf{Espacio} (ambas están definidas así en \kk{init.lua}). Por eso los atajos de vimtex \kk{\lld ll} se escriben \kk{Espacio l l}.
+  \item \mk\ = atajo o comando \textbf{definido por ti} en tu configuración. Sin marca = viene por defecto con Neovim o con el plugin.
+  \item Modos: \textbf{N} normal, \textbf{V} visual, \textbf{I} insert, \textbf{C} línea de comandos (\kk{:}), \textbf{T} terminal, \textbf{O} operator-pending.
+  \item \kk{Ctrl} se escribe \kk{C-}, \kk{Alt/Option} se escribe \kk{A-} o \kk{M-}. Ejemplo: \kk{<C-w>} = Ctrl+w.
+  \item Para ver los atajos del buffer actual: \mk\ \kk{\ld ?} (which-key). Para ver todos los atajos de una letra, pulsa el prefijo y espera.
+  \item Ayuda integrada: \kk{:help <tema>}, \kk{:help <tecla>}, \kk{:Tutor}, \kk{:checkhealth}.
+\end{itemize}
+
+
+\subsection*{Versiones}
+\begin{itemize}
+  \item \textbf{Neovim:} v0.12.6 (build Release, LuaJIT 2.1). Los atajos por defecto de LSP (\kk{gra}, \kk{grn}, \kk{grr}\ldots), el comando \kk{:lsp}, \kk{gc} y los atajos \kk{[b}/\kk{]b}/\kk{[<Space>} dependen de esta versión.
+  \item \textbf{Herramientas:} \kk{tree-sitter} CLI 0.27.2 --- rust-analyzer 0.3.2963 (Mason) --- \kk{latexmk}, \kk{pdflatex}, \kk{pandoc} y Skim para PDF.
+  \item \textbf{Servidores LSP (Mason):} lua-language-server, pyright, ruff, rust-analyzer, texlab.
+  \item \textbf{Plugins} (commit y fecha del commit instalado):
+\end{itemize}
+\begingroup\footnotesize
+\begin{center}
+\begin{tabular}{@{}lll@{\hspace{2em}}lll@{}}
+\toprule
+\textbf{Plugin} & \textbf{Commit} & \textbf{Fecha} & \textbf{Plugin} & \textbf{Commit} & \textbf{Fecha} \\
+\midrule
+\texttt{lazy.nvim} & \texttt{306a055} & 2025-12-17 & \texttt{snacks.nvim} & \texttt{882c996} & 2026-05-25 \\
+\texttt{nvim-treesitter (main)} & \texttt{60c0f468} & 2026-11-12 & \texttt{render-markdown.nvim} & \texttt{8801162} & 2026-11-12 \\
+\texttt{vimtex} & \texttt{cedc0a17} & 2026-11-13 & \texttt{nvim-lspconfig} & \texttt{443d92c6} & 2026-11-10 \\
+\texttt{mason.nvim} & \texttt{2a6940a} & 2026-06-11 & \texttt{mason-lspconfig.nvim} & \texttt{97ccf96} & 2026-11-10 \\
+\texttt{nvim-cmp} & \texttt{fe29aba} & 2026-11-05 & \texttt{gitsigns.nvim} & \texttt{dc7698f} & 2026-11-13 \\
+\texttt{vim-fugitive} & \texttt{3b753cf} & 2026-03-07 & \texttt{git-blame.nvim} & \texttt{5c536e2} & 2025-11-03 \\
+\texttt{trouble.nvim} & \texttt{bd67efe} & 2025-10-31 & \texttt{which-key.nvim} & \texttt{3aab214} & 2025-10-28 \\
+\texttt{toggleterm.nvim} & \texttt{50ea089} & 2024-12-30 & \texttt{nvim-ufo} & \texttt{ab3eb12} & 2026-01-11 \\
+\texttt{refactoring.nvim} & \texttt{ea18f97} & 2026-10-12 & \texttt{lualine.nvim} & \texttt{221ce6b} & 2026-05-31 \\
+\texttt{tokyonight.nvim} & \texttt{cdc07ac} & 2026-03-24 & \texttt{md-pdf.nvim} & \texttt{d0bab77} & 2026-01-11 \\
+\texttt{image.nvim} & \texttt{365e2ac} & 2026-09-05 & \texttt{nvim-autopairs} & \texttt{3172f40} & 2026-10-10 \\
+\texttt{indent-blankline.nvim} & \texttt{f1e186e} & 2026-09-04 &  & &  \\
+\bottomrule
+\end{tabular}
+\end{center}
+\endgroup
+
+\tableofcontents
+
+% =====================================================================
+\section{Mis atajos y comandos personalizados}
+\begin{cht}
+\rg{\ld e \mk}{Abre/cierra el explorer de archivos (Snacks Explorer).}{N, global}
+\rr{\ld ff \mk}{Buscar archivos por nombre (Snacks picker \kk{files}).}{N, global}
+\rg{\ld fg \mk}{Buscar texto en todos los archivos (live grep, Snacks \kk{grep}).}{N, global}
+\rr{\ld fb \mk}{Listar buffers abiertos y saltar a uno.}{N, global}
+\rg{\ld cf \mk}{Formatear el archivo: en Rust con \kk{rustfmt --edition 2021}, en el resto con el formateador LSP (Python: Ruff).}{N, global}
+\rr{\ld a \mk}{Acciones de código del LSP (arreglos rápidos, importar, refactor).}{N, con LSP}
+\rg{gd \mk}{Ir a la definición del símbolo bajo el cursor.}{N, con LSP}
+\rr{gr \mk}{Lista de referencias del símbolo (Snacks picker). Ver nota sobre conflicto con \kk{grr}.}{N, con LSP}
+\rg{\ld zt \mk}{Alternar pliegue bajo el cursor (\kk{za}).}{N}
+\rr{\ld zo \mk}{Abrir pliegue recursivamente (\kk{zO}).}{N}
+\rg{\ld zm \mk}{Cerrar todos los pliegues (ufo).}{N}
+\rr{\ld zr \mk}{Abrir todos los pliegues (ufo).}{N}
+\rg{\ld zz \mk}{Cerrar todo y mostrar solo el pliegue del cursor (\kk{zv}).}{N}
+\rr{\ld zf \mk}{Cerrar todo y abrir recursivamente el pliegue del cursor.}{N}
+\rg{\ld rf \mk}{Refactor: extraer función (\emph{Extract Function}).}{N y V, con treesitter}
+\rr{\ld rv \mk}{Refactor: extraer variable.}{N y V}
+\rg{\ld ri \mk}{Refactor: inline de variable.}{N}
+\rr{\ld tv \mk}{Abre/cierra la terminal Shell (horizontal, abajo).}{N}
+\rg{\ld tj \mk}{Abre/cierra \kk{jupyter notebook} en una terminal flotante (avisa si no hay venv activo).}{N}
+\rr{\ld mp \mk}{Convierte el Markdown actual a PDF con md-pdf y lo abre en Skim.}{.md}
+\rg{\ld mr \mk}{Activa/apaga el renderizado de Markdown (\kk{:RenderMarkdown toggle}).}{.md}
+\rr{\ld xx \mk}{Trouble: diagnósticos de todo el proyecto.}{N}
+\rg{\ld xX \mk}{Trouble: diagnósticos solo del buffer actual.}{N}
+\rr{\ld cs \mk}{Trouble: símbolos del archivo.}{N, con LSP}
+\rg{\ld cl \mk}{Trouble: definiciones/referencias LSP en panel derecho.}{N, con LSP}
+\rr{\ld xL \mk}{Trouble: location list.}{N}
+\rg{\ld xQ \mk}{Trouble: quickfix list.}{N}
+\rr{\ld ? \mk}{which-key: muestra los atajos locales del buffer.}{N}
+\rg{:ToggleTermShell \mk}{Mismo efecto que \ld tv.}{C}
+\rr{:ToggleTermJupyter \mk}{Mismo efecto que \ld tj.}{C}
+\end{cht}
+
+\subsection*{Automatismos al guardar (autocmds)}
+\begin{cht}
+\rg{Guardar \kk{.py} \mk}{Formatea con Ruff (cliente LSP) antes de escribir.}{.py}
+\rr{Guardar \kk{.rs} \mk}{Formatea con rustfmt (vía rust-analyzer) antes de escribir; también ordena los \kk{use}.}{.rs}
+\rg{Guardar \kk{.md} \mk}{Compila con pandoc a PDF (\kk{pdflatex}, margen 2\,cm, MathJax) y abre Skim.}{.md}
+\rr{Guardar \kk{.tex} \mk}{texlab compila con \kk{latexmk} al guardar (\kk{onSave = true}).}{.tex}
+\rg{Abrir \kk{vim} sin argumentos \mk}{Muestra el dashboard de Snacks y el explorer a la izquierda.}{Inicio}
+\end{cht}
+
+\subsection*{Dashboard de inicio (solo en la pantalla de inicio)}
+\begin{cht}
+\rg{f \mk}{Find File (Snacks picker \kk{files}).}{Dashboard}
+\rr{n \mk}{New File (buffer vacío en modo insert).}{Dashboard}
+\rg{g \mk}{Find Text (grep).}{Dashboard}
+\rr{r \mk}{Recent Files.}{Dashboard}
+\rg{c \mk}{Abrir tu configuración (\kk{\$MYVIMRC}).}{Dashboard}
+\rr{l \mk}{Abrir \kk{:Lazy}.}{Dashboard}
+\rg{q \mk}{Salir (\kk{:qa}).}{Dashboard}
+\end{cht}
+
+
+% =====================================================================
+\section{Moverse entre buffers (guía rápida)}
+Un \textbf{buffer} es un archivo cargado en memoria; una \textbf{ventana} es una vista de un buffer; una \textbf{pestaña} es un conjunto de ventanas. En tu configuración \kk{hidden} está activo (puedes cambiar de buffer sin guardar) y \kk{confirm} está apagado (\kk{:q} falla si hay cambios sin guardar; usa \kk{:wa}, \kk{:q!} o \kk{:qa!}).
+
+\subsection{Cambiar de buffer}
+\begin{cht}
+\rg{\ld fb \mk}{Lista de buffers con buscador (Snacks). \kk{<CR>} salta; en la lista \kk{dd} y en el input \kk{<C-x>} cierran el buffer sin salir del picker.}{Todos}
+\rr{:ls / :buffers / :files}{Lista numerada de buffers con sus banderas (tabla de abajo).}{Todos}
+\rg{:b N}{Ir al buffer número N (el número sale de \kk{:ls}).}{Todos}
+\rr{:b nombre}{Ir al buffer cuyo nombre contenga el texto (\kk{:b main}). \kk{<Tab>} completa; \kk{<C-d>} lista las coincidencias.}{Todos}
+\rg{:bn / :bp}{Buffer siguiente / anterior (\kk{:bnext}, \kk{:bprevious}); la lista es cíclica.}{Todos}
+\rr{]b / [b}{Lo mismo en modo normal (por defecto en 0.12); admite cuenta: \kk{3]b}.}{N}
+\rg{]B / [B}{Último / primer buffer (por defecto en 0.12).}{N}
+\rr{:bfirst / :blast}{Primer / último buffer por comando.}{Todos}
+\rg{<C-\ca{}> (Ctrl+6) / :b\# / :e \#}{\textbf{Alternar con el buffer anterior} (el último que usaste); es lo más rápido para saltar entre dos archivos. \kk{2<C-\ca{}>} va al buffer 2.}{Todos}
+\rr{<C-o> / <C-i>}{Retroceder / avanzar en la lista de saltos; cruza archivos (por ejemplo, tras \kk{gd} o \kk{gf}). \kk{<C-i>} es lo mismo que \kk{<Tab>}.}{N}
+\rg{gd \mk, luego <C-o>}{Ir a la definición en otro archivo y volver con \kk{<C-o>}.}{N, con LSP}
+\rr{:e archivo / :e \#}{Abrir un archivo (buffer nuevo) / reabrir el alterno.}{Todos}
+\rg{\ld ff \mk / \ld e \mk}{Abrir otro archivo con el picker o con el explorer.}{N}
+\rr{:lua Snacks.picker.recent()}{Archivos recientes (sin atajo; en el dashboard es \kk{r}).}{Todos}
+\rg{:sb N / :vert sb N}{Abrir el buffer N en un split horizontal / vertical.}{Todos}
+\rr{:ball / :sball}{Abrir una ventana por cada buffer.}{Todos}
+\rg{:bufdo \kk{cmd}}{Ejecutar un comando en todos los buffers (\kk{:bufdo \%s/a/b/ge | update}).}{Todos}
+\rr{:badd archivo}{Añadir un archivo a la lista sin abrirlo.}{Todos}
+\end{cht}
+
+\subsection{Cerrar buffers y salir}
+\begin{cht}
+\rg{:bd / :bd N / :bd!}{Cerrar el buffer actual / el N / forzando aunque tenga cambios. Cierra también las ventanas que lo muestran (si hay varias).}{Todos}
+\rr{:bw}{\emph{Wipeout}: lo borra por completo (marcas y opciones); \kk{:bd} lo deja descargado en la lista.}{Todos}
+\rg{:lua Snacks.bufdelete()}{Cierra el buffer sin cerrar la ventana (sin atajo asignado).}{Todos}
+\rr{:\%bd | e\# | bd\#}{Receta clásica: cerrar todos menos el actual.}{Todos}
+\rg{:w / :wa / :up}{Guardar este / todos / solo si hay cambios (\kk{:update}).}{Todos}
+\rr{:q / :q! / :qa / :qa! / :wqa / :xa}{Salir de la ventana / sin guardar / de todo / de todo sin guardar / guardar todo y salir / guardar lo modificado y salir.}{Todos}
+\rg{ZZ / ZQ}{Guardar y salir / salir sin guardar (de la ventana).}{N}
+\end{cht}
+
+\subsection{Banderas de \kk{:ls}}
+\begin{cht}
+\rg{\%}{Buffer actual (el de la ventana activa).}{:ls}
+\rr{\#}{Buffer alterno (al que vuelves con \kk{<C-\ca{}>}).}{:ls}
+\rg{a}{Activo: cargado y visible en una ventana.}{:ls}
+\rr{h}{Oculto: cargado pero no visible (puede tener cambios).}{:ls}
+\rg{+}{Modificado, con cambios sin guardar.}{:ls}
+\rr{-}{No modificable (\kk{nomodifiable}).}{:ls}
+\rg{=}{Solo lectura.}{:ls}
+\rr{u}{No listado; solo aparece con \kk{:ls!}.}{:ls}
+\end{cht}
+
+\subsection*{Consejos}
+\begin{itemize}
+  \item En un teclado que no es US, \kk{[} y \kk{]} suelen requerir Option (Mac) o AltGr (Windows). \kk{:bn}, \kk{:bp} y \kk{:b\#} no dependen del teclado. \kk{<C-\ca{}>} se envía en la mayoría de terminales como \kk{Ctrl+6}.
+  \item Con \kk{hidden} activo, cerrar nvim con buffers ocultos modificados falla (\kk{E37}/\kk{E162}); \kk{:ls} muestra cuáles llevan \kk{+}.
+  \item No tienes atajos propios para pasar de buffer en buffer (como \kk{<S-h>}/\kk{<S-l>}); si te interesa, se pueden agregar a \kk{keymaps.lua}.
+\end{itemize}
+
+% =====================================================================
+\section{Neovim básico (por defecto)}
+
+\subsection{Modos y entrada rápida}
+\begin{cht}
+\rg{i / a}{Insertar antes / después del cursor.}{N}
+\rr{I / A}{Insertar al inicio / al final de la línea.}{N}
+\rg{o / O}{Nueva línea debajo / encima e insertar.}{N}
+\rr{<Esc> o <C-[>}{Volver a modo normal.}{I, V, C}
+\rg{v / V / <C-v>}{Visual por caracteres / líneas / bloque.}{N}
+\rr{gv}{Reselecciona la última selección visual.}{N}
+\rg{R}{Modo reemplazo (sobrescribe).}{N}
+\rr{:}{Línea de comandos.}{N}
+\rg{<C-o> (en insert)}{Ejecuta un comando normal y vuelve a insert.}{I}
+\rr{<C-\bs><C-n>}{Salir de modo terminal a normal.}{T}
+\end{cht}
+
+\subsection{Movimiento}
+\begin{cht}
+\rg{h j k l}{Izquierda, abajo, arriba, derecha.}{N, V}
+\rr{w / W / b / B / e / E}{Palabra siguiente / anterior / fin de palabra (mayúscula = por espacios).}{N, V, O}
+\rg{ge}{Fin de la palabra anterior.}{N}
+\rr{0 / \ca{} / \$}{Inicio de línea / primer carácter no blanco / fin de línea.}{N, V, O}
+\rg{gg / G}{Primera / última línea. \kk{12G} o \kk{:12} salta a la línea 12.}{N, V, O}
+\rr{\{ / \}}{Párrafo anterior / siguiente.}{N, V, O}
+\rg{( / )}{Frase anterior / siguiente.}{N, V, O}
+\rr{\%}{Salta al paréntesis/llave/corchete pareja.}{N, V, O}
+\rg{f<c> / F<c>}{Ir al siguiente / anterior carácter \kk{<c>} en la línea.}{N, V, O}
+\rr{t<c> / T<c>}{Igual pero parando justo antes del carácter.}{N, V, O}
+\rg{; / ,}{Repetir último \kk{f/t} / repetir en sentido contrario.}{N, V, O}
+\rr{H / M / L}{Parte superior / media / inferior de la pantalla.}{N, V}
+\rg{<C-d> / <C-u>}{Media página abajo / arriba.}{N}
+\rr{<C-f> / <C-b>}{Página abajo / arriba.}{N}
+\rg{zz / zt / zb}{Centrar / subir / bajar la línea actual en pantalla.}{N}
+\rr{<C-e> / <C-y>}{Desplazar pantalla una línea abajo / arriba.}{N}
+\rg{<C-o> / <C-i>}{Retroceder / avanzar en la lista de saltos.}{N}
+\rr{g; / g,}{Ir a la última posición de edición anterior / siguiente.}{N}
+\rg{gi}{Volver al último punto de insert y entrar en insert.}{N}
+\rr{gf / gF}{Abrir el archivo bajo el cursor (\kk{gF} salta a la línea).}{N}
+\rg{gx}{Abre la URL/archivo bajo el cursor con el sistema.}{N, V}
+\rr{[[ / ]] / [] / ][}{Secciones (en \kk{.tex} los reemplaza vimtex).}{N}
+\rg{[( / [\{ / ]) / ]\}}{Salta al paréntesis/llave abierta o cerrada más cercana.}{N}
+\rr{[b / ]b}{Buffer anterior / siguiente.}{N}
+\rg{[a / ]a / [t / ]t}{Archivo anterior / siguiente de la lista de argumentos / tag anterior / siguiente.}{N}
+\rr{[<Space> / ]<Space>}{Añadir una línea en blanco encima / debajo sin entrar en insert.}{N}
+\end{cht}
+
+\subsection{Edición y operadores}
+\begin{cht}
+\rg{d / c / y}{Operadores: borrar / cambiar / copiar. Se combinan con movimiento (\kk{dw}, \kk{c\$}, \kk{y2j}).}{N, V}
+\rr{dd / cc / yy}{Operar sobre la línea completa.}{N}
+\rg{D / C / Y}{Hasta el fin de línea (en Neovim \kk{Y} equivale a \kk{y\$}; para copiar la línea completa usa \kk{yy}).}{N}
+\rr{x / X}{Borrar carácter bajo / antes del cursor.}{N}
+\rg{p / P}{Pegar después / antes del cursor.}{N, V}
+\rr{]p / [p}{Pegar ajustando la indentación.}{N}
+\rg{u / <C-r>}{Deshacer / rehacer.}{N}
+\rr{U}{Deshacer todos los cambios de la línea.}{N}
+\rg{.}{Repite el último cambio.}{N}
+\rr{\~{} / gu / gU}{Alternar mayúsculas / minúsculas / mayúsculas (con movimiento: \kk{gUiw}).}{N, V}
+\rg{g\~{} / g?}{Alternar mayúsculas con movimiento / aplicar ROT13.}{N, V}
+\rr{> / < / =}{Indentar / desindentar / reindentar (con movimiento: \kk{>ip}, \kk{=G}).}{N, V}
+\rg{J / gJ}{Unir línea siguiente (con espacio / sin espacio).}{N, V}
+\rr{r<c> / s / S}{Reemplazar un carácter / borrar carácter e insertar / borrar línea e insertar.}{N}
+\rg{<C-a> / <C-x>}{Incrementar / decrementar número bajo el cursor (\kk{5<C-a>} suma 5; en V: \kk{g<C-a>} secuencia).}{N, V}
+\rr{gq / gw}{Reformatear texto con movimiento (\kk{gqap}); \kk{gw} conserva el cursor.}{N, V}
+\rg{gc / gcc}{Comentar / descomentar (Neovim 0.10+; \kk{gcc} la línea, \kk{gc} con movimiento o selección).}{N, V}
+\rr{:s/a/b/}{Sustituir en la línea. Variantes: \kk{:\%s/a/b/g} todo el archivo, \kk{:\%s/a/b/gc} pidiendo confirmación.}{C}
+\rg{:g/patron/d}{Borrar todas las líneas que contienen el patrón (\kk{:g!} o \kk{:v} las que no).}{C}
+\rr{:norm <teclas>}{Ejecuta teclas normales en un rango (\kk{:\%norm A;}).}{C}
+\rg{:sort / :sort u}{Ordenar líneas / ordenar y quitar duplicados.}{C}
+\rr{<C-v> luego I / A}{Insertar o añadir texto en varias líneas a la vez (bloque).}{V bloque}
+\end{cht}
+
+\subsection{Objetos de texto (se usan tras \kk{d}, \kk{c}, \kk{y}, \kk{v}\ldots)}
+\begin{cht}
+\rg{iw / aw}{Palabra (\kk{a} incluye el espacio).}{O, V}
+\rr{iW / aW}{Palabra delimitada por espacios.}{O, V}
+\rg{is / as / ip / ap}{Frase / párrafo.}{O, V}
+\rr{i( a( i) a) / ib ab}{Dentro / alrededor de paréntesis.}{O, V}
+\rg{i\{ a\{ / iB aB}{Dentro / alrededor de llaves.}{O, V}
+\rr{i[ a[}{Corchetes.}{O, V}
+\rg{i" a" i' a' i\bt{} a\bt{}}{Comillas dobles / simples / backticks.}{O, V}
+\rr{it / at}{Etiqueta HTML/XML.}{O, V}
+\rg{i< a<}{Dentro / alrededor de \kk{< >}.}{O, V}
+\rr{an / in (visual)}{Expande / contrae la selección según el árbol (treesitter o LSP).}{V}
+\end{cht}
+
+\subsection{Búsqueda}
+\begin{cht}
+\rg{/patron / ?patron}{Buscar hacia adelante / atrás.}{N}
+\rr{n / N}{Siguiente / anterior coincidencia.}{N}
+\rg{* / \#}{Buscar la palabra bajo el cursor hacia adelante / atrás.}{N}
+\rr{g* / g\#}{Igual que arriba sin exigir palabra completa.}{N}
+\rg{:noh}{Quitar el resaltado de búsqueda.}{C}
+\rr{<C-g> / <C-t> (en /)}{Ir a la siguiente / anterior coincidencia mientras escribes la búsqueda.}{C búsqueda}
+\rg{q/ / q:}{Abrir ventana con historial de búsquedas / comandos.}{N}
+\rr{\bs c / \bs C en el patrón}{Ignorar / respetar mayúsculas solo en esa búsqueda (\kk{/foo\bs c}).}{C}
+\end{cht}
+
+\subsection{Registros, marcas y macros}
+\begin{cht}
+\rg{"ayy / "ap}{Copiar a / pegar desde el registro \kk{a}.}{N, V}
+\rr{"+y / "+p}{Registro del portapapeles del sistema (tú ya usas \kk{unnamedplus}: \kk{y} y \kk{p} lo usan solos).}{N, V}
+\rg{"0p}{Pegar lo último copiado (no afectado por borrados).}{N}
+\rr{"\_d}{Borrar sin guardar en ningún registro.}{N, V}
+\rg{:reg}{Ver registros.}{C}
+\rr{ma / \bt a / 'a}{Poner marca \kk{a} / ir a la posición exacta / ir a la línea. Mayúscula (\kk{mA}) = marca global entre archivos.}{N}
+\rg{\bt\bt / \bt. / \bt[ / \bt]}{Volver a posición anterior / última edición / inicio / fin del último texto cambiado.}{N}
+\rr{:marks / :delmarks}{Listar / borrar marcas.}{C}
+\rg{qa ... q}{Grabar macro en registro \kk{a} (el segundo \kk{q} la termina).}{N}
+\rr{@a / @@ / 5@a}{Ejecutar macro / repetir la última / ejecutarla 5 veces.}{N}
+\rg{:\%norm @a}{Ejecutar la macro sobre todas las líneas.}{C}
+\end{cht}
+
+\subsection{Ventanas, pestañas y archivos (los buffers están en la sección 2)}
+\begin{cht}
+\rg{<C-w>s / <C-w>v}{Dividir horizontal / vertical.}{N}
+\rr{:split / :vsplit \kk{archivo}}{Igual con comando (\kk{:sp}, \kk{:vs}).}{C}
+\rg{<C-w>h j k l}{Moverse entre ventanas.}{N}
+\rr{<C-w>w / <C-w>p}{Siguiente ventana / ventana anterior.}{N}
+\rg{<C-w>H J K L}{Mover la ventana a la izquierda / abajo / arriba / derecha.}{N}
+\rr{<C-w>= / <C-w>\_ / <C-w>|}{Igualar tamaños / maximizar alto / maximizar ancho.}{N}
+\rg{<C-w>+ / <C-w>- / <C-w>> / <C-w><}{Cambiar alto o ancho.}{N}
+\rr{<C-w>c / <C-w>o / <C-w>q}{Cerrar esta / cerrar todas las demás / salir de esta.}{N}
+\rg{<C-w>T}{Mover la ventana a una pestaña nueva.}{N}
+\rr{<C-w>d}{Mostrar diagnóstico bajo el cursor en flotante.}{N}
+\rg{:tabnew / :tabc / :tabo}{Nueva pestaña / cerrar / cerrar las demás.}{C}
+\rr{gt / gT / 2gt}{Pestaña siguiente / anterior / ir a la 2.}{N}
+\rg{:e! / :e archivo}{Recargar descartando cambios / abrir archivo.}{C}
+\rr{:w / :wq / :q / :q! / :qa / :wa / :x}{Guardar / guardar y salir / salir / salir sin guardar / salir de todo / guardar todos / guardar si hay cambios y salir.}{C}
+\rg{:w !sudo tee \%}{Guardar con permisos de superusuario.}{C}
+\end{cht}
+
+\subsection{Pliegues (folds)}
+Tu config deja todos los pliegues abiertos al iniciar (\kk{foldlevel=99}) y usa nvim-ufo.
+\begin{cht}
+\rg{za / zA}{Alternar pliegue (\kk{A} = recursivo).}{N}
+\rr{zo / zO}{Abrir pliegue (\kk{O} = recursivo).}{N}
+\rg{zc / zC}{Cerrar pliegue (\kk{C} = recursivo).}{N}
+\rr{zv}{Abrir lo necesario para ver la línea del cursor.}{N}
+\rg{zM / zR}{Cerrar / abrir todos los pliegues (nativo de Vim; para ufo usa \ld zm / \ld zr).}{N}
+\rr{zm / zr}{Un nivel más / menos de pliegue.}{N}
+\rg{zj / zk}{Ir al inicio del siguiente / fin del anterior pliegue.}{N}
+\rr{[z / ]z}{Ir al inicio / fin del pliegue actual.}{N}
+\rg{zn / zN / zi}{Desactivar / activar / alternar plegado.}{N}
+\rr{zf\{mov\} / zd / zE}{Crear pliegue manual / borrar el del cursor / borrar todos.}{N, foldmethod=manual}
+\end{cht}
+
+\subsection{Quickfix, location list y diagnósticos de comandos}
+\begin{cht}
+\rg{:copen / :cclose}{Abrir / cerrar la lista quickfix.}{C}
+\rr{:cnext / :cprev / :cfirst / :clast}{Moverse por quickfix (también \kk{]q}, \kk{[q}, \kk{]Q}, \kk{[Q}).}{C, N}
+\rg{:lopen / :lnext / :lprev}{Equivalentes para location list (\kk{]l}, \kk{[l}).}{C, N}
+\rr{:vimgrep /pat/ **/*.py}{Buscar en archivos y llenar quickfix.}{C}
+\rg{:cdo / :cfdo \kk{comando}}{Ejecutar un comando en cada entrada / archivo de quickfix.}{C}
+\rr{<C-q> (en Snacks picker)}{Envía los resultados del picker a quickfix.}{Picker}
+\end{cht}
+
+\subsection{Comandos útiles de diagnóstico y utilidades}
+\begin{cht}
+\rg{:checkhealth \kk{[plugin]}}{Chequeo de salud (\kk{:checkhealth lazy}, \kk{vim.lsp}, \kk{vim.treesitter}, \kk{mason}, \kk{snacks}).}{C}
+\rr{:messages}{Ver mensajes anteriores.}{C}
+\rg{:Inspect}{Muestra los grupos de resaltado y capas de treesitter/syntax bajo el cursor.}{C}
+\rr{:InspectTree}{Abre el árbol de treesitter del buffer.}{C}
+\rg{:EditQuery}{Editor de queries de treesitter con resaltado en vivo.}{C}
+\rr{:map / :nmap / :verbose map <tecla>}{Listar atajos / ver quién definió un atajo.}{C}
+\rg{:command / :verbose command X}{Listar comandos de usuario / ver dónde se definió.}{C}
+\rr{:set opcion? / :set opcion! / :set noopcion}{Consultar / alternar / desactivar una opción (\kk{:set wrap!}, \kk{:set list!}).}{C}
+\rg{:lua \kk{codigo} / :=\kk{expr}}{Ejecutar Lua / imprimir una expresión (\kk{:=vim.bo.filetype}).}{C}
+\rr{:source \% / :luafile \%}{Recargar el archivo actual (útil en tu config).}{C}
+\rg{:terminal / :term}{Abrir terminal integrada.}{C}
+\rr{:Man \kk{cmd} / K (en man)}{Leer páginas de manual dentro de nvim.}{C}
+\rg{:help \kk{tema} / <C-]> / <C-t>}{Ayuda / seguir tag / volver.}{C, N}
+\rr{:Tutor}{Tutorial interactivo de Neovim.}{C}
+\rg{:set spell / z= / ]s / [s / zg}{Corrector ortográfico: activar / sugerencias / siguiente / anterior error / añadir palabra.}{N, C}
+\rr{:earlier 10m / :later / :undolist}{Viajar en el historial de deshacer (por tiempo o cantidad).}{C}
+\rg{:retab / :set ff=unix}{Convertir tabs a espacios / cambiar formato de fin de línea.}{C}
+\rr{ga / g8}{Mostrar código del carácter bajo el cursor (decimal/hex / bytes UTF-8).}{N}
+\rg{g<C-g>}{Contar palabras / líneas / bytes del archivo o selección.}{N, V}
+\rr{<C-g>}{Mostrar nombre del archivo y posición.}{N}
+\end{cht}
+
+\subsection{Completado nativo (insert)}
+\begin{cht}
+\rg{<C-n> / <C-p>}{Completar con palabras del buffer (siguiente / anterior).}{I}
+\rr{<C-x><C-o>}{Omnifunc (LSP, \kk{vim.lsp.omnifunc}).}{I, con LSP}
+\rg{<C-x><C-f>}{Completar rutas de archivo.}{I}
+\rr{<C-x><C-l>}{Completar líneas completas.}{I}
+\rg{<C-w> / <C-u>}{Borrar palabra anterior / hasta el inicio de la línea.}{I}
+\rr{<C-r>\{reg\}}{Pegar contenido de un registro (\kk{<C-r>0}, \kk{<C-r>+}).}{I, C}
+\rg{<C-s>}{Mostrar ayuda de firma de función (LSP).}{I, con LSP}
+\end{cht}
+
+
+\subsection{Movimiento ampliado}
+\begin{cht}
+\rg{gj / gk}{Bajar / subir por línea \emph{visual} (útil con líneas largas partidas; tu \kk{wrap} está activo).}{N, V}
+\rr{g0 / g\ca{} / g\$ / gm / gM}{Inicio / primer carácter / final de la línea visual; mitad de la línea de pantalla / de la línea de texto.}{N, V}
+\rg{g\_}{Último carácter no blanco de la línea.}{N, V, O}
+\rr{\_ / + / - / <CR>}{Primer no blanco de esta línea (con cuenta, N$-$1 líneas abajo) / de la siguiente / de la anterior (\kk{<CR>} igual que \kk{+}).}{N, V}
+\rg{N| / N\%}{Ir a la columna N / al N\,\% del archivo (\kk{50\%}).}{N}
+\rr{N gg / NG / :N}{Ir a la línea N.}{N, C}
+\rg{go / :goto N}{Ir al byte N del archivo.}{N, C}
+\rr{z<CR> / z. / z-}{Colocar la línea del cursor arriba / al centro / abajo y situarse en su primer no blanco.}{N}
+\rg{zh / zl / zH / zL}{Desplazar la vista a izquierda / derecha (con \kk{nowrap}): un carácter / media pantalla.}{N}
+\rr{:jumps / :changes}{Ver la lista de saltos / de cambios.}{C}
+\rg{gD}{Ir a la declaración global (búsqueda de texto clásica; con LSP tu \kk{gd} es más preciso).}{N}
+\rr{gn / gN}{Seleccionar la siguiente / anterior coincidencia de la última búsqueda. Truco: \kk{cgn} cambia la coincidencia y \kk{.} repite en la siguiente.}{N, V, O}
+\rg{<C-]> / <C-t>}{Ir a la definición con tags (aquí usa el LSP) / volver.}{N}
+\end{cht}
+
+\subsection{Edición ampliada}
+\begin{cht}
+\rg{xp / ddp / ddkP}{Intercambiar dos caracteres / la línea con la siguiente / con la anterior.}{N}
+\rr{yyp / :t.}{Duplicar la línea actual.}{N, C}
+\rg{:m+1 / :m-2 / :m0 / :m\$}{Mover la línea abajo / arriba / al inicio / al final del archivo.}{C}
+\rr{gp / gP}{Pegar dejando el cursor después del texto pegado.}{N}
+\rg{"1p ... "9p}{Pegar de los registros numerados (últimos borrados de línea o más). Tras \kk{"1p}, \kk{u.} avanza al siguiente.}{N}
+\rr{"- / ". / ": / "/ / "\% / "\# / "=}{Registros especiales: borrado pequeño / último texto insertado / último comando / última búsqueda / nombre del archivo / archivo alterno / expresión (\kk{"=2*3<CR>p}).}{N, I, C}
+\rg{\&  / g\& / :\&\&}{Repetir la última sustitución en la línea / en todo el archivo / con las mismas banderas.}{N, C}
+\rr{:s///g  c  i  I  n  e}{Banderas de \kk{:s}: todas en la línea / pedir confirmación / ignorar mayúsculas / respetar / solo contar / sin error si no hay coincidencia.}{C}
+\rg{:\%s/\bs s\bs +\$//e}{Quitar espacios al final de todas las líneas.}{C}
+\rr{==  =ap  gg=G}{Reindentar la línea / el párrafo / el archivo.}{N}
+\rg{gI / gi}{Insertar en la columna 1 / donde terminó la última inserción.}{N}
+\rr{:r archivo / :r !cmd}{Insertar el contenido de un archivo / la salida de un comando.}{C}
+\rg{!!cmd / !\{mov\}cmd / :\%!cmd}{Filtrar líneas con un comando externo (\kk{:\%!sort -u}, \kk{!ipjq .}). Requiere que el comando exista en el sistema.}{N, C}
+\rr{:sort n / :sort! / :sort i}{Ordenar por número / invertir / ignorando mayúsculas.}{C}
+\rg{g<C-a>}{En visual: numerar en secuencia (1,2,3\ldots) las líneas seleccionadas.}{V}
+\end{cht}
+
+\subsection{Modo visual}
+\begin{cht}
+\rg{o / O}{Saltar al otro extremo de la selección / de la esquina del bloque.}{V}
+\rr{ip, ap, iw, i(, it\ldots}{Extender la selección con objetos de texto.}{V}
+\rg{:}{Abre la línea de comandos con \kk{'<,'>} ya escrito.}{V}
+\rr{u / U / \tl}{Minúsculas / mayúsculas / alternar.}{V}
+\rg{> / < / =}{Indentar / desindentar / reindentar (con cuenta: \kk{3>}).}{V}
+\rr{J / gJ}{Unir líneas seleccionadas.}{V}
+\rg{r<c>}{Reemplazar cada carácter seleccionado por \kk{<c>}.}{V}
+\rr{p / P}{Reemplazar la selección con el registro; con \kk{P} no se pierde lo copiado (Neovim).}{V}
+\rg{I / A}{En bloque: insertar / añadir en todas las líneas. Con \kk{\$A} añade al final de cada línea.}{V bloque}
+\rr{gc}{Comentar / descomentar la selección.}{V}
+\rg{:'<,'>normal \kk{teclas}}{Aplicar teclas normales a las líneas seleccionadas.}{V}
+\rr{<C-q> (Windows)}{Bloque visual cuando \kk{<C-v>} lo captura el terminal para pegar.}{Windows}
+\end{cht}
+
+\subsection{Modo insert}
+\begin{cht}
+\rg{<C-h> / <C-w> / <C-u>}{Borrar carácter / palabra / hasta el inicio de la línea.}{I}
+\rr{<C-t> / <C-d>}{Indentar / desindentar la línea actual sin salir de insert.}{I}
+\rg{<C-r>\{reg\}}{Pegar un registro (\kk{<C-r>"}, \kk{<C-r>+}, \kk{<C-r>0}); con \kk{<C-r><C-p>} no se reindenta.}{I, C}
+\rr{<C-a> / <C-@>}{Insertar el último texto insertado / insertarlo y salir de insert.}{I}
+\rg{<C-v>\{código\}}{Insertar un carácter por código (\kk{<C-v>u00e9} = é, \kk{<C-v>065} = A) o una tecla literal (\kk{<C-v><Tab>}).}{I}
+\rr{<C-k>\{a\}\{b\}}{Dígrafos: \kk{<C-k>a'} = á, \kk{<C-k>e'} = é, \kk{<C-k>n?} = ñ, \kk{<C-k>?I} = ¿, \kk{<C-k>!I} = ¡. Útil con teclado US para escribir español.}{I}
+\rg{<C-e> / <C-y>}{Copiar el carácter de la línea de debajo / de arriba (si el menú de cmp está abierto, \kk{<C-e>} lo cierra y \kk{<C-y>} acepta).}{I}
+\rr{<C-o>\{cmd\}}{Ejecutar un comando normal y volver a insert (\kk{<C-o>0}, \kk{<C-o>dd}).}{I}
+\rg{<C-c> / <C-[> / <Esc>}{Salir a modo normal (\kk{<C-c>} no dispara abreviaturas).}{I}
+\end{cht}
+
+\subsection{Línea de comandos, rangos y nombres de archivo}
+\begin{cht}
+\rg{:N,Md / :.,+5d}{Rangos: líneas N a M / la actual y las 5 siguientes.}{C}
+\rr{\% / . / \$ / '< '> / /pat/}{Archivo completo / línea actual / última / selección visual / siguiente línea con el patrón.}{C}
+\rg{:g/pat/cmd}{Ejecutar \kk{cmd} en las líneas que coinciden (\kk{:g/TODO/p}); \kk{:v/pat/cmd} en las que no.}{C}
+\rr{<C-r><C-w> / <C-r>"}{Insertar la palabra bajo el cursor / el último yank en la línea de comandos.}{C}
+\rg{<C-b> / <C-e> / <C-w> / <C-u>}{Inicio / fin / borrar palabra / borrar todo en la línea de comandos.}{C}
+\rr{<Up> / <Down>}{Historial de comandos filtrado por lo ya escrito.}{C}
+\rg{<C-f> / q:}{Abrir la ventana de historial de comandos para editarlo como texto.}{C, N}
+\rr{@: / :@:}{Repetir el último comando de línea.}{N, C}
+\rg{:!cmd / :!!}{Ejecutar un comando del sistema / repetir el último.}{C}
+\rr{\%  \%:p  \%:h  \%:t  \%:r  \%:e}{Nombre del archivo actual: relativo / ruta absoluta / carpeta / solo nombre / sin extensión / solo extensión (\kk{:e \%:h/otro.lua}).}{C}
+\rg{:cd \%:h / :lcd / :tcd / :pwd}{Cambiar directorio de trabajo al del archivo / solo de la ventana / de la pestaña / ver el actual.}{C}
+\rr{:saveas nombre / :w nombre / :file nombre}{Guardar con otro nombre y cambiar el buffer / guardar una copia / renombrar el buffer.}{C}
+\rg{:windo / :tabdo / :argdo cmd}{Ejecutar un comando en todas las ventanas / pestañas / argumentos.}{C}
+\rr{:history / :reg / :marks / :jumps}{Historial, registros, marcas y saltos.}{C}
+\rg{:echo expand('\%:p')}{Ver la ruta absoluta del archivo actual.}{C}
+\end{cht}
+
+\subsection{Deshacer, recargar y archivos de intercambio}
+\begin{cht}
+\rg{g- / g+}{Retroceder / avanzar en el árbol de deshacer (por orden cronológico, no por rama).}{N}
+\rr{:earlier 5m / :later 5m / :undolist}{Viajar en el tiempo por minutos o cantidad de cambios / ver ramas.}{C}
+\rg{:checktime / :set autoread}{Detectar archivos modificados fuera de nvim / recargarlos solos.}{C}
+\rr{:e! / :e}{Recargar el archivo descartando cambios / recargar si no hay cambios.}{C}
+\rg{R / D / Q / E / O (aviso \kk{E325})}{Al abrir un archivo con \kk{.swp}: recuperar / borrar el swap / salir / editar igualmente / solo lectura. Tu config tiene \kk{swapfile} activo y \kk{undofile} apagado (el deshacer se pierde al cerrar).}{Todos}
+\rr{:recover / :set noswapfile}{Recuperar desde el swap / desactivarlo en este buffer.}{C}
+\rg{<C-z> / fg}{Suspender nvim y volver a él desde el shell (no funciona en Windows nativo).}{N, Mac y WSL}
+\end{cht}
+
+% =====================================================================
+\section{LSP, diagnósticos y formato}
+
+Servidores configurados (instalados con Mason): \textbf{rust\_analyzer} (\kk{.rs}), \textbf{lua\_ls} (\kk{.lua}), \textbf{pyright} (\kk{.py}, tipos/hover), \textbf{ruff} (\kk{.py}, lint/formato; su hover está desactivado), \textbf{texlab} (\kk{.tex}, compilación con latexmk y búsqueda hacia adelante en Skim).
+
+\begin{cht}
+\rg{K}{Hover: documentación y tipo del símbolo.}{N, con LSP}
+\rr{gd \mk}{Ir a la definición.}{N, con LSP}
+\rg{<C-]>}{Ir a la definición mediante tagfunc (LSP).}{N, con LSP}
+\rr{grn}{Renombrar símbolo en todo el proyecto.}{N, con LSP}
+\rg{gra}{Acciones de código (también en visual).}{N, V, con LSP}
+\rr{grr}{Referencias del símbolo.}{N, con LSP}
+\rg{gri}{Ir a implementaciones.}{N, con LSP}
+\rr{grt}{Ir a la definición del tipo.}{N, con LSP}
+\rg{grx}{Ejecutar un codelens.}{N, con LSP}
+\rr{gO}{Símbolos del documento (outline).}{N, con LSP}
+\rg{]d / [d}{Siguiente / anterior diagnóstico del buffer.}{N}
+\rr{<C-w>d}{Ver el diagnóstico bajo el cursor en flotante.}{N}
+\rg{gq / gw}{Formatear con el servidor (\kk{formatexpr}) / sin mover el cursor.}{N, V}
+\rr{\ld cf \mk}{Formatear archivo completo (ver sección de mis atajos).}{N}
+\rg{:checkhealth vim.lsp}{Servidores activos, capacidades, configuración y ruta del log. En tu setup \textbf{no existen} \kk{:LspInfo}, \kk{:LspStart}, \kk{:LspStop}, \kk{:LspRestart} ni \kk{:LspLog}: Neovim 0.12 ya trae \kk{:lsp} y lspconfig no los define.}{C}
+\rr{:lsp enable / disable \kk{[nombre]}}{Activar / desactivar un servidor para el buffer actual y los siguientes (\kk{:lsp enable pyright}).}{C}
+\rg{:lsp restart / stop \kk{[nombre]}}{Reiniciar / detener los clientes del buffer (o solo el indicado).}{C}
+\rr{:lua vim.cmd.edit(vim.lsp.log.get\_filename())}{Abrir el archivo de log del LSP.}{C}
+\rg{:lua vim.lsp.buf.format()}{Formatear manualmente.}{C}
+\rr{:lua vim.diagnostic.setqflist()}{Enviar todos los diagnósticos a quickfix.}{C}
+\rg{:lua vim.diagnostic.open\_float()}{Abrir diagnóstico de la línea en flotante.}{C}
+\rr{:lua vim.lsp.inlay\_hint.enable()}{Activar \emph{inlay hints} (útil en Rust).}{C, con LSP}
+\end{cht}
+
+\subsection{Qué hace cada servidor en tu configuración}
+\begin{cht}
+\rg{rust-analyzer}{Autocompletado, diagnósticos, tipos. Formatea con \kk{rustfmt --edition 2021}.}{.rs}
+\rr{lua\_ls}{Autocompletado y diagnósticos de Lua (puede avisar \emph{undefined global vim} al editar esta config).}{.lua}
+\rg{pyright}{Chequeo de tipos \kk{basic}, hover, \kk{autoSearchPaths}, \kk{useLibraryCodeForTypes}.}{.py}
+\rr{ruff}{Lint y formato; organiza imports; formatea al guardar.}{.py}
+\rg{texlab}{Compila con \kk{latexmk -pdf -interaction=nonstopmode -synctex=1} al guardar; forward search a Skim (macOS) o SumatraPDF.}{.tex}
+\end{cht}
+
+% =====================================================================
+\section{snacks.nvim: dashboard, explorer, picker y avisos}
+Módulos activados: \kk{dashboard}, \kk{explorer} (reemplaza netrw), \kk{picker} y \kk{notifier}.
+
+\subsection{Explorer (lista lateral)}
+\begin{cht}
+\rg{\ld e \mk}{Abrir/cerrar el explorer.}{N, global}
+\rr{l / <CR>}{Abrir archivo o desplegar carpeta.}{Explorer}
+\rg{h}{Cerrar carpeta (o subir un nivel si ya está cerrada).}{Explorer}
+\rr{<BS>}{Subir al directorio padre.}{Explorer}
+\rg{.}{Establecer la carpeta bajo el cursor como raíz del explorer.}{Explorer}
+\rr{<C-c>}{Cambiar el directorio de trabajo de la pestaña (\kk{:tcd}) a la carpeta actual.}{Explorer}
+\rg{a}{Añadir archivo (terminar el nombre con \kk{/} para crear carpeta).}{Explorer}
+\rr{d}{Borrar (pide confirmación).}{Explorer}
+\rg{r}{Renombrar.}{Explorer}
+\rr{c}{Copiar el elemento seleccionado (después pegar con \kk{p}).}{Explorer}
+\rg{m}{Mover el elemento (después pegar con \kk{p}).}{Explorer}
+\rr{y / p}{Marcar para copiar / pegar. Con selección múltiple (\kk{<Tab>}) opera sobre varios.}{Explorer}
+\rg{o}{Abrir con la aplicación del sistema (\kk{open}).}{Explorer}
+\rr{P}{Alternar vista previa.}{Explorer}
+\rg{u}{Actualizar el árbol.}{Explorer}
+\rr{I / H}{Mostrar/ocultar archivos ignorados (\kk{.gitignore}) / archivos ocultos.}{Explorer}
+\rg{Z}{Cerrar todas las carpetas.}{Explorer}
+\rr{<leader>/}{Buscar texto dentro de la carpeta seleccionada.}{Explorer}
+\rg{<C-t>}{Abrir terminal en la carpeta seleccionada.}{Explorer}
+\rr{]g / [g}{Siguiente / anterior archivo con cambios de git.}{Explorer}
+\rg{]d / [d, ]w / [w, ]e / [e}{Siguiente / anterior diagnóstico, aviso o error.}{Explorer}
+\rr{<Tab> / <S-Tab>}{Seleccionar / deseleccionar y bajar / subir.}{Explorer}
+\rg{escribir texto}{Filtrar el árbol con el campo de búsqueda superior (\kk{/} alterna foco entre input y lista).}{Explorer}
+\end{cht}
+
+\subsection{Dentro de cualquier picker (buscar archivos, grep, buffers, etc.)}
+\begin{cht}
+\rg{<CR>}{Abrir la selección.}{Picker}
+\rr{<C-s> / <C-v> / <C-t>}{Abrir en split horizontal / vertical / pestaña nueva.}{Picker}
+\rg{<S-CR>}{Elegir una ventana concreta donde abrir.}{Picker}
+\rr{<C-n> <C-p> / <C-j> <C-k> / <Up> <Down>}{Bajar / subir en la lista.}{Picker}
+\rg{<Tab> / <S-Tab>}{Seleccionar varios elementos y avanzar / retroceder.}{Picker}
+\rr{<C-a>}{Seleccionar todos.}{Picker}
+\rg{<C-q>}{Enviar los resultados (o selección) a quickfix.}{Picker}
+\rr{<C-d> / <C-u>}{Desplazar la lista abajo / arriba.}{Picker}
+\rg{<C-f> / <C-b>}{Desplazar la vista previa abajo / arriba.}{Picker}
+\rr{<A-p>}{Mostrar/ocultar vista previa.}{Picker}
+\rg{<A-m>}{Maximizar el picker.}{Picker}
+\rr{<A-w>}{Cambiar el foco entre input, lista y preview.}{Picker}
+\rg{<A-h> / <A-i>}{Alternar archivos ocultos / ignorados.}{Picker}
+\rr{<A-r>}{Alternar modo regex en el grep.}{Picker}
+\rg{<A-f>}{Alternar seguir el archivo actual (\emph{follow}).}{Picker}
+\rr{<C-g>}{Alternar búsqueda en vivo / filtrada (grep).}{Picker}
+\rg{<C-Up> / <C-Down>}{Historial de búsquedas anterior / siguiente.}{Picker}
+\rr{<C-r><C-w> / <C-r>\%}{Insertar palabra bajo el cursor / nombre del archivo en el input.}{Picker}
+\rg{/}{Alternar foco entre input y lista.}{Picker}
+\rr{? }{Mostrar la ayuda con todas las teclas del picker.}{Picker}
+\rg{<Esc> / q / <C-c>}{Cerrar el picker.}{Picker}
+\rr{<C-w>H J K L}{Cambiar la disposición del picker (izquierda, abajo, arriba, derecha).}{Picker}
+\end{cht}
+
+\subsection{Fuentes del picker (se invocan con \kk{:lua Snacks.picker.<nombre>()} o con \kk{:lua Snacks.picker()} para ver la lista)}
+Solo \kk{files}, \kk{grep}, \kk{buffers}, \kk{lsp\_references} y \kk{recent} tienen atajo en tu config; el resto se llama a mano o puedes asignarles un atajo.
+\begin{cht}
+\rg{files / git\_files}{Archivos del proyecto / archivos rastreados por git.}{Global}
+\rr{grep / grep\_word / grep\_buffers / git\_grep}{Buscar texto: en proyecto / palabra bajo el cursor / en buffers abiertos / en git.}{Global}
+\rg{lines}{Buscar líneas en el buffer actual.}{Global}
+\rr{buffers / recent / smart}{Buffers abiertos / archivos recientes / búsqueda inteligente combinada.}{Global}
+\rg{projects / zoxide}{Cambiar de proyecto / carpetas frecuentes (zoxide).}{Global}
+\rr{help / man / commands / keymaps}{Buscar ayuda, manuales, comandos ex o atajos.}{Global}
+\rg{command\_history / search\_history}{Historial de comandos / búsquedas.}{Global}
+\rr{diagnostics / diagnostics\_buffer}{Diagnósticos del proyecto / del buffer.}{Con LSP}
+\rg{lsp\_definitions / lsp\_declarations / lsp\_implementations / lsp\_type\_definitions}{Navegación LSP.}{Con LSP}
+\rr{lsp\_references / lsp\_symbols / lsp\_incoming\_calls / lsp\_outgoing\_calls}{Referencias, símbolos y jerarquía de llamadas.}{Con LSP}
+\rg{git\_status / git\_log / git\_log\_file / git\_log\_line / git\_branches / git\_diff / git\_stash}{Vistas de git.}{Repo git}
+\rr{undo}{Árbol de deshacer navegable.}{Global}
+\rg{marks / registers / jumps}{Ver marcas, registros y saltos.}{Global}
+\rr{qflist / loclist}{Navegar quickfix / location list.}{Global}
+\rg{colorschemes / highlights / icons}{Cambiar tema con vista previa / grupos de resaltado / buscar iconos.}{Global}
+\rr{notifications}{Historial de notificaciones.}{Global}
+\rg{treesitter / lazy / autocmds / spelling / cliphist}{Nodos de treesitter / plugins de lazy / autocmds / sugerencias ortográficas / historial del portapapeles.}{Global}
+\rr{resume}{Reabrir el último picker con su búsqueda.}{Global}
+\rg{pickers}{Lista de todos los pickers disponibles.}{Global}
+\end{cht}
+
+\subsection{Otras utilidades de snacks (disponibles al llamarlas con \kk{:lua}, sin atajo asignado)}
+\begin{cht}
+\rg{Snacks.notifier.show\_history()}{Abrir el historial de notificaciones.}{Global}
+\rr{Snacks.notifier.hide()}{Descartar las notificaciones visibles.}{Global}
+\rg{Snacks.zen()}{Modo concentración (ventana centrada).}{Global}
+\rr{Snacks.scratch()}{Buffer de notas temporal persistente.}{Global}
+\rg{Snacks.gitbrowse()}{Abrir el archivo/línea en GitHub desde el navegador.}{Repo git}
+\rr{Snacks.bufdelete()}{Cerrar un buffer sin cerrar la ventana.}{Global}
+\rg{Snacks.terminal()}{Terminal flotante.}{Global}
+\rr{Snacks.lazygit()}{Abre lazygit (requiere tener \kk{lazygit} instalado; aún no lo tienes).}{Repo git}
+\end{cht}
+
+% =====================================================================
+\section{Autocompletado (nvim-cmp) y autopairs}
+Fuentes de completado: \kk{nvim\_lsp} y \kk{buffer}.
+\begin{cht}
+\rg{<C-Space> \mk}{Abrir el menú de completado manualmente.}{I}
+\rr{<CR> \mk}{Aceptar la sugerencia seleccionada (selecciona la primera si no hay ninguna).}{I}
+\rg{<C-n> / <C-p>}{Siguiente / anterior sugerencia.}{I}
+\rr{<Down> / <Up>}{Igual, preset de nvim-cmp.}{I}
+\rg{<C-y>}{Confirmar sugerencia.}{I}
+\rr{<C-e>}{Cerrar el menú.}{I}
+\rg{<C-b> / <C-f>}{\emph{No} están mapeados en tu configuración (el preset \kk{insert} de nvim-cmp no los incluye).}{I}
+\rr{auto-pairs}{Al escribir \kk{(}, \kk{[}, \kk{\{}, \kk{"}, \kk{'} se inserta el cierre automáticamente.}{I}
+\rg{<BS> en un par vacío}{Borra los dos caracteres del par.}{I}
+\rr{<A-e> (no activo)}{La envoltura rápida existe en nvim-autopairs, pero tu \kk{setup} está vacío y no la activa; necesitaría \kk{fast\_wrap = \{\}}.}{I}
+\rg{Aceptar una función}{Con cmp, autopairs añade \kk{()} automáticamente al confirmar.}{I}
+\end{cht}
+
+% =====================================================================
+\section{Folding con nvim-ufo}
+Proveedores: treesitter primero y luego indentación. Con tus mapeos \ld zm / \ld zr cierras/abres todo; los nativos \kk{zM}/\kk{zR} no pasan por ufo.
+\begin{cht}
+\rg{\ld zm \mk / \ld zr \mk}{Cerrar / abrir todos los pliegues con ufo.}{N}
+\rr{:lua require("ufo").peekFoldedLinesUnderCursor()}{Ver en flotante el contenido del pliegue cerrado bajo el cursor.}{N}
+\rg{:lua require("ufo").closeFoldsWith(n)}{Cerrar los pliegues de nivel mayor que \kk{n}.}{N}
+\rr{:lua require("ufo").goNextClosedFold()}{Saltar al siguiente pliegue cerrado (hay \kk{goPreviousClosedFold}).}{N}
+\rg{:lua require("ufo").inspect()}{Depurar el estado de ufo en el buffer.}{N}
+\rr{:lua require("ufo").disable() / enable()}{Desactivar / activar ufo.}{N}
+\end{cht}
+
+% =====================================================================
+\section{Treesitter}
+Parsers instalados: rust, lua, bash, python, markdown, markdown\_inline, json, toml, yaml, latex. El resaltado y la indentación experimental se activan al abrir rust, lua, sh/bash, python, markdown (sin indent), json, toml y yaml. Para \kk{.tex} se mantiene la sintaxis de vimtex.
+\begin{cht}
+\rg{:TSInstall \kk{lenguaje}}{Instalar un parser (compila con el compilador C y \kk{tree-sitter-cli}).}{C}
+\rr{:TSUpdate [\kk{lenguaje}]}{Actualizar parsers.}{C}
+\rg{:TSUninstall \kk{lenguaje}}{Desinstalar un parser.}{C}
+\rr{:TSLog}{Ver el log del instalador.}{C}
+\rg{:Inspect}{Ver capa de resaltado (treesitter/syntax) bajo el cursor.}{C}
+\rr{:InspectTree}{Árbol sintáctico del buffer.}{C}
+\rg{:lua vim.treesitter.start()}{Activar resaltado de treesitter manualmente en el buffer.}{C}
+\rr{:lua vim.treesitter.stop()}{Desactivarlo en el buffer.}{C}
+\rg{an / in (visual)}{Ampliar / reducir selección por nodos sintácticos.}{V}
+\end{cht}
+
+% =====================================================================
+\section{Git}
+
+\subsection{vim-fugitive}
+\begin{cht}
+\rg{:Git / :G}{Ventana de estado interactiva (también \kk{:Git status}).}{Repo git}
+\rr{:Git \kk{args}}{Ejecuta cualquier comando git (\kk{:Git log --oneline}, \kk{:Git push}).}{Repo git}
+\rg{:Git commit / :Git commit --amend}{Commit / modificar el último commit.}{Repo git}
+\rr{:Git blame}{Anotar cada línea con autor y commit (en la ventana: \kk{<CR>} abre el commit, \kk{q} cierra).}{Repo git}
+\rg{:Gdiffsplit [rev]}{Diff del archivo contra el índice o una revisión (\kk{:Gvdiffsplit}, \kk{:Ghdiffsplit}).}{Repo git}
+\rr{:Gwrite / :Gread}{Guardar y añadir al índice / restaurar el archivo desde el índice.}{Repo git}
+\rg{:Gedit \kk{rev:ruta}}{Abrir una versión del archivo en otra revisión.}{Repo git}
+\rr{:Gclog / :Gllog}{Historial del archivo o rango en quickfix / en location list.}{Repo git}
+\rg{:Ggrep / :Glgrep}{Buscar en el árbol de trabajo con \kk{git grep}.}{Repo git}
+\rr{:GBrowse}{Abrir el archivo en el remoto (requiere plugin de GitHub; puede no funcionar solo con fugitive).}{Repo git}
+\rg{:GMove / :GDelete / :GRename}{Mover / borrar / renombrar archivo con git.}{Repo git}
+\end{cht}
+
+\subsubsection*{Dentro de la ventana de \kk{:Git}}
+\begin{cht}
+\rg{s / u / -}{Añadir al índice / sacar del índice / alternar (\kk{-}) el archivo o hunk bajo el cursor.}{Ventana \kk{:Git}}
+\rr{U}{Descartar todos los cambios del índice.}{Ventana \kk{:Git}}
+\rg{X}{Descartar cambios del archivo o hunk bajo el cursor.}{Ventana \kk{:Git}}
+\rr{=}{Mostrar/ocultar diff \emph{inline}.}{Ventana \kk{:Git}}
+\rg{dd / dv / ds}{Diff del archivo (split actual / vertical / horizontal).}{Ventana \kk{:Git}}
+\rr{cc / ca / ce}{Commit / commit amend / amend sin editar mensaje.}{Ventana \kk{:Git}}
+\rg{cw / cf / cF}{Reword del último commit / commit \kk{fixup!} del commit bajo el cursor / \kk{fixup!} más rebase con autosquash.}{Ventana \kk{:Git}}
+\rr{<CR>}{Abrir el archivo bajo el cursor.}{Ventana \kk{:Git}}
+\rg{g?}{Ayuda con todos los atajos.}{Ventana \kk{:Git}}
+\end{cht}
+
+\subsection{gitsigns.nvim (signos en la columna y operaciones por hunk)}
+No tienes atajos definidos para gitsigns; se usan sus comandos \kk{:Gitsigns <acción>}.
+\begin{cht}
+\rg{:Gitsigns preview\_hunk}{Ver el hunk (cambio) bajo el cursor en flotante.}{Repo git}
+\rr{:Gitsigns preview\_hunk\_inline}{Ver el hunk en línea.}{Repo git}
+\rg{:Gitsigns stage\_hunk}{Añadir el hunk (o la selección visual) al índice.}{Repo git, N y V}
+\rr{:Gitsigns reset\_hunk}{Descartar el hunk.}{Repo git, N y V}
+\rg{:Gitsigns undo\_stage\_hunk}{Deshacer el último stage.}{Repo git}
+\rr{:Gitsigns stage\_buffer / reset\_buffer}{Añadir / descartar todo el archivo.}{Repo git}
+\rg{:Gitsigns nav\_hunk next / prev / first / last}{Moverse por los hunks.}{Repo git}
+\rr{:Gitsigns blame\_line}{Mostrar el blame completo de la línea.}{Repo git}
+\rg{:Gitsigns blame}{Abrir blame por líneas del archivo.}{Repo git}
+\rr{:Gitsigns diffthis [rev]}{Diff del archivo contra el índice o una revisión.}{Repo git}
+\rg{:Gitsigns setqflist [all]}{Enviar hunks a quickfix.}{Repo git}
+\rr{:Gitsigns toggle\_signs}{Mostrar/ocultar signos en la columna.}{Repo git}
+\rg{:Gitsigns toggle\_numhl / toggle\_linehl / toggle\_word\_diff}{Resaltar números / líneas / diferencias de palabras.}{Repo git}
+\rr{:Gitsigns toggle\_current\_line\_blame}{Alternar el blame al final de la línea.}{Repo git}
+\rg{:Gitsigns toggle\_deleted}{Mostrar líneas borradas.}{Repo git}
+\rr{:Gitsigns select\_hunk}{Seleccionar el hunk como texto visual.}{Repo git}
+\rg{:Gitsigns setloclist / show / refresh}{Hunks a location list / mostrar el archivo del índice / forzar la actualización de signos.}{Repo git}
+\rr{:Gitsigns change\_base / reset\_base}{Comparar contra otra revisión base (por ejemplo, otra rama) / volver al índice.}{Repo git}
+\end{cht}
+
+\subsection{git-blame.nvim (mensaje virtual al final de la línea)}
+Se muestra: resumen, fecha, autor y hash del commit. Está activado de inicio.
+\begin{cht}
+\rg{:GitBlameToggle / Enable / Disable}{Alternar / activar / desactivar el mensaje de blame.}{Repo git}
+\rr{:GitBlameCopySHA}{Copiar el hash del commit de la línea.}{Repo git}
+\rg{:GitBlameCopyCommitURL}{Copiar la URL del commit.}{Repo git}
+\rr{:GitBlameCopyFileURL}{Copiar la URL del archivo en el remoto.}{Repo git}
+\rg{:GitBlameCopyPRURL}{Copiar la URL del pull request.}{Repo git}
+\rr{:GitBlameOpenCommitURL}{Abrir el commit en el navegador.}{Repo git}
+\rg{:GitBlameOpenFileURL}{Abrir el archivo en el navegador.}{Repo git}
+\end{cht}
+
+% =====================================================================
+\section{Trouble, which-key, terminal y refactoring}
+
+\subsection{trouble.nvim}
+\begin{cht}
+\rg{\ld xx \mk}{Panel de diagnósticos de todo el proyecto.}{N}
+\rr{\ld xX \mk}{Diagnósticos del buffer actual.}{N}
+\rg{\ld cs \mk}{Símbolos (outline) del archivo.}{N, con LSP}
+\rr{\ld cl \mk}{Definiciones y referencias LSP (panel derecho).}{N, con LSP}
+\rg{\ld xL \mk / \ld xQ \mk}{Location list / quickfix list.}{N}
+\rr{:Trouble \kk{modo} toggle}{Comando general; modos: \kk{diagnostics}, \kk{symbols}, \kk{lsp}, \kk{loclist}, \kk{qflist}, \kk{snacks}, \kk{telescope}, \kk{fzf}.}{C}
+\rg{<CR> / o}{Saltar al elemento (\kk{o} salta y cierra el panel).}{Panel Trouble}
+\rr{\} / ]] / \{ / [[}{Siguiente / anterior elemento.}{Panel Trouble}
+\rg{<C-s> / <C-v>}{Abrir el elemento en split horizontal / vertical.}{Panel Trouble}
+\rr{p / P}{Vista previa del elemento / alternar vista previa fija.}{Panel Trouble}
+\rg{r / R}{Refrescar / alternar el refresco automático.}{Panel Trouble}
+\rr{dd / d (visual)}{Quitar elementos de la lista.}{Panel Trouble}
+\rg{i}{Inspeccionar el elemento.}{Panel Trouble}
+\rr{za zo zc zA zO zC zm zr zM}{Plegar y desplegar grupos.}{Panel Trouble}
+\rg{q}{Cerrar el panel.}{Panel Trouble}
+\rr{?}{Ayuda de atajos del panel.}{Panel Trouble}
+\end{cht}
+
+\subsection{which-key.nvim}
+\begin{cht}
+\rg{\ld ? \mk}{Mostrar los atajos locales del buffer.}{N}
+\rr{pulsar un prefijo y esperar}{Muestra qué atajos hay disponibles tras \ld, \kk{g}, \kk{z}, \kk{<C-w>}, etc.}{N, V}
+\rg{<Esc> / <BS>}{Cerrar / retroceder un nivel en el menú.}{which-key}
+\rr{:WhichKey [\kk{prefijo}]}{Abrir el menú de which-key de forma manual.}{C}
+\end{cht}
+
+\subsection{toggleterm.nvim}
+Tu configuración abre las terminales manualmente. Terminal 1 = shell horizontal (15 líneas); terminal 2 = Jupyter flotante.
+\begin{cht}
+\rg{\ld tv \mk}{Abrir/cerrar la terminal shell.}{N}
+\rr{\ld tj \mk}{Abrir/cerrar Jupyter.}{N}
+\rg{:ToggleTerm [\kk{N}]}{Abrir/cerrar la terminal número \kk{N} (por defecto 1).}{C}
+\rr{:ToggleTerm direction=float / vertical / tab}{Abrir en otra disposición.}{C}
+\rg{:TermExec cmd="\kk{...}"}{Ejecutar un comando en una terminal (\kk{:TermExec cmd="cargo run"}).}{C}
+\rr{:TermSelect}{Seleccionar entre terminales abiertas.}{C}
+\rg{:ToggleTermToggleAll}{Abrir/cerrar todas las terminales.}{C}
+\rr{:ToggleTermSendCurrentLine}{Enviar la línea actual a la terminal.}{N}
+\rg{:ToggleTermSendVisualLines / SendVisualSelection}{Enviar las líneas / el texto seleccionado.}{V}
+\rr{:ToggleTermSetName \kk{nombre}}{Renombrar la terminal.}{C}
+\rg{<C-\bs><C-n>}{Salir de modo terminal a modo normal.}{T}
+\rr{i / a (en terminal)}{Volver a modo terminal (se entra solo con \kk{start\_in\_insert}).}{N en terminal}
+\end{cht}
+
+\subsection{refactoring.nvim}
+Requiere el parser de treesitter del lenguaje (rust, lua, python\ldots).
+\begin{cht}
+\rg{\ld rf \mk}{Extraer la selección a una nueva función.}{N y V}
+\rr{\ld rv \mk}{Extraer la selección a una variable.}{N y V}
+\rg{\ld ri \mk}{Inline de la variable bajo el cursor.}{N}
+\rr{:lua require("refactoring").refactor("Extract Block")}{Extraer bloque (sin atajo).}{N}
+\rg{:lua require("refactoring").refactor("Inline Function")}{Inline de función (sin atajo; no todos los lenguajes).}{N}
+\end{cht}
+
+% =====================================================================
+\section{Markdown}
+
+\subsection{render-markdown.nvim}
+Renderiza \emph{dentro del buffer}: encabezados con fondo, listas con viñetas, tablas con bordes, código con bloque, checkboxes, citas, etc. Se carga solo en \kk{.md}. Con el cursor sobre una línea se muestra el texto original.
+\begin{cht}
+\rg{\ld mr \mk}{Alternar renderizado.}{.md}
+\rr{:RenderMarkdown toggle / enable / disable}{Alternar / activar / desactivar globalmente.}{.md}
+\rg{:RenderMarkdown buf\_toggle / buf\_enable / buf\_disable}{Lo mismo solo para el buffer actual.}{.md}
+\rr{:RenderMarkdown preview}{Mostrar el buffer renderizado en una ventana aparte.}{.md}
+\rg{:RenderMarkdown expand / contract}{Aumentar / reducir el margen donde se muestra el texto original.}{.md}
+\rr{:RenderMarkdown get / set / set\_buf}{Consultar o establecer el estado.}{.md}
+\rg{:RenderMarkdown debug / config / log}{Depuración: info del nodo, diferencias de configuración, abrir log.}{.md}
+\end{cht}
+
+\subsection{md-pdf.nvim, pandoc e imágenes}
+\begin{cht}
+\rg{\ld mp \mk}{Convertir el \kk{.md} actual a PDF y abrirlo en Skim (resaltado de código estilo \kk{pygments}).}{.md}
+\rr{Guardar \kk{.md} \mk}{Además, tu autocmd regenera \kk{<archivo>.pdf} con pandoc y abre Skim cada vez que guardas.}{.md}
+\rg{image.nvim (backend \kk{kitty})}{Muestra imágenes dentro de nvim (PNG, JPG, GIF, WebP) y las de Markdown; funciona en terminales con protocolo kitty como WezTerm. Al abrir una imagen, se muestra directamente.}{.md, imágenes}
+\end{cht}
+
+% =====================================================================
+\section{LaTeX (vimtex + texlab)}
+Recuerda: tu \lld\ es \textbf{Espacio}, así que \kk{\lld ll} = \kk{Espacio l l}. Compilador \kk{latexmk}, visor Skim con sincronización (macOS) o SumatraPDF (Windows/WSL). Las compilaciones corren también por texlab al guardar.
+
+\subsection{Compilación y visor}
+\begin{cht}
+\rg{\lld ll}{Iniciar/detener la compilación continua (latexmk).}{.tex}
+\rr{\lld lL}{Compilar solo la parte seleccionada.}{.tex, N y V}
+\rg{\lld lk / \lld lK}{Detener compilación del proyecto / de todos.}{.tex}
+\rr{\lld lS}{Compilación de una sola pasada (\emph{single shot}).}{.tex}
+\rg{\lld lv}{Abrir el PDF y hacer \emph{forward search} (saltar a la posición actual).}{.tex}
+\rr{\lld lr}{\emph{Reverse search}: del PDF al código.}{.tex}
+\rg{\lld le}{Mostrar errores en quickfix.}{.tex}
+\rr{\lld lo}{Ver la salida del compilador.}{.tex}
+\rg{\lld lq}{Abrir el log de mensajes de vimtex.}{.tex}
+\rr{\lld lg / \lld lG}{Estado de la compilación (proyecto actual / todos).}{.tex}
+\rg{\lld lc / \lld lC}{Limpiar auxiliares / limpiar auxiliares y el PDF.}{.tex}
+\rr{\lld lx / \lld lX}{Recargar vimtex / recargar el estado del buffer.}{.tex}
+\rg{\lld ls}{Alternar el archivo principal (proyectos con varios \kk{.tex}).}{.tex}
+\rr{:VimtexCountWords / CountLetters}{Contar palabras / letras (requiere \kk{texcount}); con \kk{!} cuenta el proyecto.}{.tex}
+\end{cht}
+
+\subsection{Información, navegación y documentación}
+\begin{cht}
+\rg{\lld lt / \lld lT}{Abrir / alternar el índice (TOC) en panel vertical a la derecha (ancho 30).}{.tex}
+\rr{\lld li / \lld lI}{Información del proyecto (corta / completa).}{.tex}
+\rg{\lld la}{Menú contextual del elemento bajo el cursor (por ejemplo, citas).}{.tex}
+\rr{\lld lm}{Lista de atajos de insert (\kk{:VimtexImapsList}).}{.tex}
+\rg{\lld lp}{Activar/desactivar vista previa en vivo de matemáticas y \kk{tikz-cd} (Neovim).}{.tex}
+\rr{K}{Documentación del paquete bajo el cursor (\kk{:VimtexDocPackage}).}{.tex}
+\rg{[[ / ]] / [] / ][}{Moverse entre secciones.}{.tex}
+\rr{[m / ]m / [M / ]M}{Inicio/fin de entornos (anterior/siguiente).}{.tex}
+\rg{[n / ]n / [N / ]N}{Inicio/fin de entornos matemáticos.}{.tex}
+\rr{[r / ]r / [R / ]R}{Inicio/fin de frames de beamer.}{.tex}
+\rg{[* / ]* / [/ / ]/}{Inicio/fin de comentarios.}{.tex}
+\rr{\%}{Salta entre \kk{\bs begin} y \kk{\bs end}, delimitadores y pares.}{.tex}
+\rg{gf}{Abrir el archivo del \kk{\bs input} / \kk{\bs include} / gráfico bajo el cursor.}{.tex}
+\end{cht}
+
+\subsection{Edición estructural}
+\begin{cht}
+\rg{cse / dse}{Cambiar / borrar el entorno que rodea el cursor.}{.tex}
+\rr{csc / dsc}{Cambiar / borrar el comando que rodea el cursor.}{.tex}
+\rg{cs\$ / ds\$}{Cambiar / borrar el entorno matemático (\kk{\$...\$}, \kk{\bs[ \bs]}, \kk{equation}).}{.tex}
+\rr{csd / dsd}{Cambiar / borrar delimitadores (\kk{(}, \kk{\bs left(}, etc.).}{.tex}
+\rg{tse}{Alternar entorno (por ejemplo, \kk{itemize} $\leftrightarrow$ \kk{enumerate}).}{.tex}
+\rr{tss}{Alternar versión estrella del entorno (\kk{equation*}).}{.tex}
+\rg{tsc}{Alternar versión estrella del comando (\kk{\bs section*}).}{.tex}
+\rr{ts\$}{Alternar entre formas de matemáticas (\kk{\$...\$} $\leftrightarrow$ \kk{\bs[...\bs]} $\leftrightarrow$ \kk{equation}).}{.tex}
+\rg{tsf}{Alternar fracción en línea (\kk{a/b}) $\leftrightarrow$ \kk{\bs frac\{a\}\{b\}}.}{.tex, N y V}
+\rr{tsb}{Alternar salto de línea de un comando.}{.tex}
+\rg{tsd / tsD}{Alternar modificador de delimitador (\kk{\bs left}/\kk{\bs right}) / en sentido inverso.}{.tex, N y V}
+\rr{<F6>}{Rodear línea o selección con un entorno (pide el nombre).}{.tex, N y V}
+\rg{<F7>}{Crear comando alrededor de la palabra o selección.}{.tex, N, V, I}
+\rr{<F8>}{Añadir \kk{\bs left}/\kk{\bs right} a los delimitadores.}{.tex}
+\rg{]] (en insert)}{Cerrar el entorno o delimitador abierto más cercano.}{.tex, I}
+\end{cht}
+
+\subsection{Objetos de texto de vimtex (con \kk{d}, \kk{c}, \kk{y}, \kk{v})}
+\begin{cht}
+\rg{ac / ic}{Comando (con argumentos / solo contenido).}{.tex}
+\rr{ad / id}{Delimitador (\kk{\bs left( ... \bs right)}).}{.tex}
+\rg{ae / ie}{Entorno (con \kk{\bs begin}\ldots\kk{\bs end} / solo el interior).}{.tex}
+\rr{a\$ / i\$}{Matemáticas en línea.}{.tex}
+\rg{aP / iP}{Sección (con título / contenido).}{.tex}
+\rr{am / im}{Elemento de lista (\kk{\bs item}).}{.tex}
+\end{cht}
+
+\subsection{Atajos de insert de matemáticas}
+Actúan solo \textbf{dentro de entornos matemáticos}, en modo insert. Prefijo por defecto: \kk{\bt} (backtick); para estilos de fuente el prefijo es \kk{\#}. Lista completa en tu editor: \kk{\lld lm}. Pulsar \kk{\bt\bt} inserta un backtick literal.
+\begin{cht}
+\rg{\bt a \bt b \bt g \bt d \bt e \bt z \bt h \bt q \bt i \bt k}{\kk{\bs alpha}, \kk{\bs beta}, \kk{\bs gamma}, \kk{\bs delta}, \kk{\bs epsilon}, \kk{\bs zeta}, \kk{\bs eta}, \kk{\bs theta}, \kk{\bs iota}, \kk{\bs kappa}.}{.tex, I en math}
+\rr{\bt l \bt m \bt n \bt x \bt p \bt r \bt s \bt t \bt u \bt f \bt c \bt y \bt w}{\kk{\bs lambda}, \kk{\bs mu}, \kk{\bs nu}, \kk{\bs xi}, \kk{\bs pi}, \kk{\bs rho}, \kk{\bs sigma}, \kk{\bs tau}, \kk{\bs upsilon}, \kk{\bs phi}, \kk{\bs chi}, \kk{\bs psi}, \kk{\bs omega}.}{.tex, I en math}
+\rg{\bt D \bt F \bt G \bt L \bt P \bt Q \bt S \bt U \bt W \bt X \bt Y}{Griegas mayúsculas: \kk{\bs Delta}, \kk{\bs Phi}, \kk{\bs Gamma}, \kk{\bs Lambda}, \kk{\bs Pi}, \kk{\bs Theta}, \kk{\bs Sigma}, \kk{\bs Upsilon}, \kk{\bs Omega}, \kk{\bs Xi}, \kk{\bs Psi}.}{.tex, I en math}
+\rr{\bt ve \bt vf \bt vk \bt vp \bt vq \bt vr}{Variantes: \kk{\bs varepsilon}, \kk{\bs varphi}, \kk{\bs varkappa}, \kk{\bs varpi}, \kk{\bs vartheta}, \kk{\bs varrho}.}{.tex, I en math}
+\rg{\bt 0 \bt 2 \bt 6 \bt 8}{\kk{\bs emptyset}, \kk{\bs sqrt}, \kk{\bs partial}, \kk{\bs infty}.}{.tex, I en math}
+\rr{\bt = \bt \bs{} \bt . \bt * \bt H \bt + \bt N}{\kk{\bs equiv}, \kk{\bs setminus}, \kk{\bs cdot}, \kk{\bs times}, \kk{\bs hbar}, \kk{\bs dagger}, \kk{\bs nabla}.}{.tex, I en math}
+\rg{\bt < \bt >}{\kk{\bs langle}, \kk{\bs rangle}.}{.tex, I en math}
+\rr{\bt ( \bt ) \bt [ \bt ]}{\kk{\bs subset}, \kk{\bs supset}, \kk{\bs subseteq}, \kk{\bs supseteq}.}{.tex, I en math}
+\rg{\bt A \bt E \bt B}{\kk{\bs forall}, \kk{\bs exists}, \kk{\bs boldsymbol}.}{.tex, I en math}
+\rr{\bt jh \bt jl \bt jk \bt jj}{Flechas: \kk{\bs leftarrow}, \kk{\bs rightarrow}, \kk{\bs uparrow}, \kk{\bs downarrow}.}{.tex, I en math}
+\rg{\bt jH \bt jL \bt jK \bt jJ}{Flechas dobles: \kk{\bs Leftarrow}, \kk{\bs Rightarrow}, \kk{\bs Uparrow}, \kk{\bs Downarrow}.}{.tex, I en math}
+\rr{\# b \# B \# c \# f \# - \# /}{Estilos que envuelven la siguiente letra: \kk{\bs mathbf\{\}}, \kk{\bs mathbb\{\}}, \kk{\bs mathcal\{\}}, \kk{\bs mathfrak\{\}}, \kk{\bs overline\{\}}, \kk{\bs slashed\{\}}.}{.tex, I en math}
+\end{cht}
+
+\subsection{Autocompletado en LaTeX y otras opciones}
+\begin{cht}
+\rg{Citas, etiquetas, comandos, entornos, paquetes, clases, archivos}{Completados de vimtex vía omnifunc (\kk{<C-x><C-o>}); texlab ofrece los suyos a través de cmp.}{.tex}
+\rr{\lld la sobre una cita}{Abre el menú contextual con información de la referencia.}{.tex}
+\rg{texlab chktex}{Desactivado (\kk{onEdit = false}, \kk{onOpenAndSave = false}).}{.tex}
+\rr{\kk{vimtex\_quickfix\_mode = 0}}{Los errores de compilación no abren quickfix solos; usa \kk{\lld le}.}{.tex}
+\end{cht}
+
+% =====================================================================
+\section{Lenguajes: Python, Rust, Lua, JSON/TOML/YAML}
+\begin{cht}
+\rg{Python: guardar}{Ruff formatea el archivo.}{.py}
+\rr{Python: \ld cf \mk}{Formatea con el cliente LSP (Ruff).}{.py}
+\rg{Python: pyright}{Diagnósticos y hover; Ruff aporta lint y organizar imports (\ld a).}{.py}
+\rr{Rust: guardar}{Formatea con rustfmt (también ordena los imports).}{.rs}
+\rg{Rust: \ld cf \mk}{Escribe el archivo, formatea con \kk{rustfmt --edition 2021} y recarga.}{.rs}
+\rr{Rust: \ld a}{Acciones de rust-analyzer: añadir imports, derivar traits, extraer, etc.}{.rs}
+\rg{Lua / JSON / TOML / YAML}{Resaltado e indentación por treesitter; formato con \ld cf solo si el servidor LSP lo ofrece.}{.lua, .json, .toml, .yaml}
+\end{cht}
+
+% =====================================================================
+\section{Plugins: lazy.nvim, Mason, check de salud}
+
+\subsection{lazy.nvim (gestor de plugins)}
+Tu configuración busca actualizaciones en segundo plano sin notificar (\kk{checker.notify = false}). Con \kk{:Lazy} ves cuántas hay.
+\begin{cht}
+\rg{:Lazy}{Abrir la interfaz de lazy.}{C}
+\rr{:Lazy sync}{Instalar faltantes, actualizar todo y limpiar sobrantes (modifica \kk{lazy-lock.json}).}{C}
+\rg{:Lazy update [\kk{plugin}]}{Actualizar plugins (todos o uno).}{C}
+\rr{:Lazy install / clean}{Instalar los que falten / borrar los que ya no están en la config.}{C}
+\rg{:Lazy restore}{Volver a las versiones de \kk{lazy-lock.json}.}{C}
+\rr{:Lazy check}{Ver qué plugins tienen actualizaciones.}{C}
+\rg{:Lazy log / profile / debug / health / help}{Registro de cambios / tiempos de carga / depuración / diagnóstico / ayuda.}{C}
+\rr{H / I / U / S / C / X / R / L / P / D / ?}{Dentro de la UI: Home / Install / Update / Sync / Check / Clean / Restore / Log / Profile / Debug / Ayuda de atajos.}{UI de lazy}
+\rg{<CR> / K / d}{Sobre un plugin: expandir detalles / mostrar hover / ver el diff de commits.}{UI de lazy}
+\end{cht}
+
+\subsection{Mason (instalador de servidores)}
+\begin{cht}
+\rg{:Mason}{Abrir la interfaz de Mason.}{C}
+\rr{:MasonInstall \kk{paquete}}{Instalar un servidor/linter/formateador.}{C}
+\rg{:MasonUninstall \kk{paquete}}{Desinstalar.}{C}
+\rr{:MasonUpdate}{Actualizar el registro de paquetes.}{C}
+\rg{:MasonLog}{Abrir el log.}{C}
+\rr{<CR> / i / u / c / U / C / X / <C-c> / <C-f> / g?}{Expandir paquete / instalar / actualizar o reinstalar / comprobar nueva versión del paquete / actualizar todos / ver cuáles están desactualizados / desinstalar / cancelar instalación / filtrar por lenguaje / ayuda.}{UI de Mason}
+\end{cht}
+
+\subsection{Chequeos útiles}
+\begin{cht}
+\rg{:checkhealth lazy}{Estado de lazy.nvim.}{C}
+\rr{:checkhealth vim.lsp}{Servidores LSP, capacidades y observadores.}{C}
+\rg{:checkhealth vim.treesitter}{Parsers y queries instalados.}{C}
+\rr{:checkhealth mason}{Dependencias para instalar servidores.}{C}
+\rg{:checkhealth snacks}{Estado de snacks (por ejemplo, soporte de imágenes).}{C}
+\rr{:checkhealth vim.deprecated}{APIs obsoletas usadas por tu config.}{C}
+\end{cht}
+
+
+% =====================================================================
+\section{Mac y Windows: diferencias y trampas}
+Tu config detecta el sistema: en Mac usa \kk{pbcopy}/\kk{pbpaste} y Skim; en Linux/WSL/Windows usa \kk{clip.exe} o \kk{xclip}/\kk{wl-copy} y SumatraPDF; por SSH usa OSC~52. Lo marcado como \emph{(verificado)} se probó en esta Mac; lo demás es conocimiento general y puede variar con tu terminal.
+
+\subsection{Teclado y terminal}
+\begin{cht}
+\rg{Tecla Cmd en Mac}{El terminal no pasa Cmd a nvim. Cmd+C/Cmd+V del terminal copian/pegan texto; dentro de nvim usa \kk{y}/\kk{p}, que ya van al portapapeles del sistema por \kk{unnamedplus} (verificado: \kk{clipboard=unnamedplus}).}{Mac}
+\rr{<A-...> (Alt/Option)}{En Mac, Option escribe caracteres especiales a menos que el terminal lo trate como Alt. Afecta a \kk{<A-p>}, \kk{<A-m>}, \kk{<A-w>}, \kk{<A-h>}, \kk{<A-i>}, \kk{<A-r>}, \kk{<A-f>} del picker. En WezTerm se ajusta con \kk{send\_composed\_key\_when\_left\_alt\_is\_pressed}.}{Mac}
+\rg{<C-Space> \mk}{macOS puede usar \kk{Ctrl+Espacio} para cambiar de teclado, y entonces nvim no lo recibe; revisa Ajustes del Sistema $\to$ Teclado $\to$ Atajos.}{Mac}
+\rr{<C-Up> / <C-Down>}{En macOS suelen abrir Mission Control; por eso el historial del picker (\kk{<C-Up>}/\kk{<C-Down>}) puede no llegar. Usa \kk{<C-p>}/\kk{<C-n>} en su lugar o cambia el atajo del sistema.}{Mac}
+\rg{<C-v> y bloque visual}{Algunos terminales de Windows usan \kk{Ctrl+V} para pegar. Usa \kk{<C-q>} para el visual de bloque.}{Windows}
+\rr{Pegar desde el sistema}{En insert, pega con el atajo del terminal (Cmd+V en Mac, Ctrl+Shift+V o clic derecho en Windows). En normal usa \kk{"+p} o simplemente \kk{p}.}{Todos}
+\rg{<C-\ca{}> / <C-6>}{La mayoría de terminales envían \kk{Ctrl+6} como \kk{<C-\ca{}>}; si no, usa \kk{:b\#}.}{Todos}
+\rr{Teclados no US}{\kk{[ ] \{ \} \bs\ | \tl\ \bt} requieren Option (Mac) o AltGr (Windows). Si molesta, usa \kk{:bn}, \kk{:bp} o los comandos \kk{:lua}.}{Mac, Windows}
+\end{cht}
+
+\subsection{Archivos, rutas y shell}
+\begin{cht}
+\rg{Ruta de la configuración}{Mac y WSL: \kk{\tl/.config/nvim}. Windows nativo: \kk{\%LOCALAPPDATA\%\bs nvim}. Los datos (plugins, parsers) van en \kk{stdpath("data")}; ver con \kk{:echo stdpath("data")}.}{Todos}
+\rr{Fin de línea CRLF}{En Windows verás \kk{\ca{}M} al final de las líneas de archivos CRLF. \kk{:set ff?} muestra el formato; \kk{:e ++ff=dos} lo recarga como DOS; \kk{:set ff=unix} convierte a LF; \kk{:\%s/\bs r//g} quita los \kk{\ca{}M}.}{Windows}
+\rg{Separadores de ruta}{Mac y WSL usan \kk{/}; Windows nativo usa \kk{\bs} (nvim acepta \kk{/}). En WSL las unidades están en \kk{/mnt/c/\ldots}.}{Todos}
+\rr{Shell de \kk{:terminal} y toggleterm}{Usan \kk{vim.o.shell}: zsh en Mac, bash/zsh en WSL, PowerShell o cmd en Windows nativo. Comprueba con \kk{:set shell?}.}{Todos}
+\rg{Visor de PDF}{Tus atajos de LaTeX y Markdown abren Skim en Mac y SumatraPDF (debe estar en el \kk{PATH}) en Windows/WSL.}{Todos}
+\rr{gx, \kk{o} del explorer}{Abren con el programa del sistema: \kk{open} en Mac, \kk{xdg-open} en Linux, el asociado en Windows.}{Todos}
+\rg{Herramientas externas}{\kk{pandoc}, \kk{latexmk}, \kk{rustfmt}, \kk{jupyter} y \kk{tree-sitter} deben estar en el \kk{PATH} de cada sistema; falta \kk{jupyter} en tu Mac.}{Todos}
+\rr{Filtros \kk{:\%!cmd}}{Dependen del sistema: \kk{sort}, \kk{jq} y \kk{awk} no existen igual en Windows nativo (sí en WSL).}{Windows}
+\end{cht}
+
+\subsection{Opciones efectivas de tu configuración (verificadas en esta Mac)}
+\begin{cht}
+\rg{hidden = true}{Puedes cambiar de buffer con cambios sin guardar.}{Todos}
+\rr{confirm = false, autowrite = false}{\kk{:q} y cambiar de archivo no preguntan ni guardan solos.}{Todos}
+\rg{clipboard = unnamedplus}{Todo \kk{y}, \kk{d} y \kk{p} usan el portapapeles del sistema (por SSH solo copia, vía OSC~52).}{Todos}
+\rr{ignorecase = false, smartcase = false}{Las búsquedas distinguen mayúsculas; usa \kk{\bs c} en el patrón para ignorarlas.}{Todos}
+\rg{splitright = false, splitbelow = false}{\kk{<C-w>v} abre la ventana nueva a la izquierda y \kk{<C-w>s} arriba.}{Todos}
+\rr{wrap = true, scrolloff = 0}{Las líneas largas se parten (usa \kk{gj}/\kk{gk}) y el cursor puede llegar al borde de la pantalla.}{Todos}
+\rg{mouse = nvi}{El ratón funciona en normal, visual e insert (clic, arrastrar para seleccionar, rueda).}{Todos}
+\rr{swapfile = true, undofile = false}{Hay archivos \kk{.swp}; el historial de deshacer no se guarda al cerrar.}{Todos}
+\rg{timeoutlen = 1000}{Un segundo de espera tras un prefijo (\kk{\ld c}, \kk{\ld z}, \kk{g}); por eso se nota el retraso de los atajos con prefijo compartido.}{Todos}
+\rr{number, relativenumber}{Número absoluto en la línea actual y relativo en las demás (\kk{5j}, \kk{3dd} se calculan a ojo).}{Todos}
+\rg{shiftwidth = 4, tabstop = 4, expandtab}{Indentación de 4 espacios; \kk{<Tab>} inserta espacios.}{Todos}
+\rr{foldcolumn = 1, foldlevel = 99}{Columna de pliegues visible; todo abierto al iniciar.}{Todos}
+\end{cht}
+
+% =====================================================================
+\section{Notas y trampas de tu configuración}
+\begin{itemize}
+  \item \textbf{\kk{gr} vs. \kk{grn}/\kk{gra}/\kk{grr}/\kk{gri}/\kk{grt}/\kk{grx}:} tu \kk{gr} (referencias con Snacks) comparte prefijo con los atajos LSP nativos de Neovim. Al pulsar \kk{gr} Neovim espera \kk{timeoutlen} por si sigues con otra letra. Si te molesta el retraso, quita tu \kk{gr} y usa \kk{grr}.
+  \item \textbf{\ld c} es prefijo de tres cosas: \ld cf (formatear), \ld cs y \ld cl (Trouble). No hay conflicto, pero \kk{\ld c} espera si no completas.
+  \item \textbf{\ld z\ldots} también es prefijo: \ld zt, \ld zo, \ld zm, \ld zr, \ld zz y \ld zf.
+  \item Como \lld\ y \ld\ son ambas Espacio, los atajos de vimtex (\kk{Espacio l l}) y los tuyos comparten tecla. which-key te ayuda mostrando las opciones al pulsar Espacio.
+  \item Los pliegues empiezan todos abiertos; para plegar usa \kk{za}/\kk{zc} o \ld zm.
+  \item \textbf{Guardar un \kk{.md}} dispara pandoc y abre Skim cada vez; para guardar sin eso usa \kk{:noautocmd w}.
+  \item \textbf{Guardar \kk{.py}/\kk{.rs}} formatea el archivo; para saltarte el formato una vez usa \kk{:noautocmd w}.
+  \item \kk{:Lazy sync} también limpia plugins que ya no estén en tu configuración; prefiere \kk{:Lazy update} o \kk{:Lazy install} si no quieres borrar nada.
+  \item \kk{Snacks.lazygit()} necesita \kk{lazygit} (no instalado); \kk{:ToggleTermJupyter} necesita \kk{jupyter} en el PATH (no instalado).
+\end{itemize}
+
+\end{document}
