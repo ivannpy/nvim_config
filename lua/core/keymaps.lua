@@ -26,7 +26,7 @@ end, {
 })
 
 -- Formatear código
-vim.keymap.set("n", "<leader>f", function()
+vim.keymap.set("n", "<leader>cf", function()
     local ft = vim.bo.filetype
 
     if ft == "rust" then
@@ -63,7 +63,7 @@ vim.keymap.set("n", "<leader>zo", "zO", {
     desc = "Open fold recursively",
 })
 
-vim.keymap.set("n", "<leader>z", "za", {
+vim.keymap.set("n", "<leader>zt", "za", {
     desc = "Toggle fold",
 })
 
