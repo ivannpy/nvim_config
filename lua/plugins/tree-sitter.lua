@@ -18,6 +18,7 @@ return {
             "json",
             "toml",
             "yaml",
+            "latex",
         })
 
         -- Filetypes con resaltado de treesitter
