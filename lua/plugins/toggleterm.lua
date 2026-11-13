@@ -7,7 +7,7 @@ return {
     config = function()
         require("toggleterm").setup({
             size = 15,
-            shade_filetypes = { "toggleterm", "NvimTree" },
+            shade_filetypes = { "toggleterm" },
             start_in_insert = true,
             insert_mappings = true,
             persist_size = true,

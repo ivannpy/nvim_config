@@ -2,8 +2,8 @@
 return {
     "neovim/nvim-lspconfig",       -- Gestor de Language Servers
     dependencies = {
-        "williamboman/mason.nvim", -- Instalador de LSP
-        "williamboman/mason-lspconfig.nvim"
+        "mason-org/mason.nvim", -- Instalador de LSP
+        "mason-org/mason-lspconfig.nvim"
     },
     config = function()
         require("mason").setup()
