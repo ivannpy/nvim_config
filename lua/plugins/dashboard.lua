@@ -4,6 +4,9 @@ return {
     priority = 1000,
     lazy = false,
     opts = {
+        notifier = { enabled = true },
+        picker = { enabled = true },
+        explorer = { enabled = true, replace_netrw = true },
         dashboard = {
             preset = {
                 header = table.concat({
@@ -15,10 +18,10 @@ return {
                     "╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝",
                 }, "\n"),
                 keys = {
-                    { icon = " ", key = "f", desc = "Find File", action = ":Telescope find_files" },
+                    { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.picker.files()" },
                     { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
-                    { icon = " ", key = "g", desc = "Find Text", action = ":Telescope live_grep" },
-                    { icon = " ", key = "r", desc = "Recent Files", action = ":Telescope oldfiles" },
+                    { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.picker.grep()" },
+                    { icon = " ", key = "r", desc = "Recent Files", action = ":lua Snacks.picker.recent()" },
                     { icon = " ", key = "c", desc = "Config", action = ":e $MYVIMRC" },
                     { icon = "󰒲 ", key = "l", desc = "Lazy", action = ":Lazy" },
                     { icon = " ", key = "q", desc = "Quit", action = ":qa" },

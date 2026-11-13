@@ -5,7 +5,7 @@ vim.api.nvim_create_autocmd("VimEnter", {
             return
         end
         vim.schedule(function()
-            vim.cmd("Neotree show filesystem left")
+            Snacks.explorer()
         end)
     end,
 })

@@ -1,26 +1,28 @@
--- Telescope
+-- Snacks picker
 vim.keymap.set("n", "<leader>ff", function()
-    require("telescope.builtin").find_files()
+    Snacks.picker.files()
 end, {
     desc = "Find files",
 })
 
 vim.keymap.set("n", "<leader>fg", function()
-    require("telescope.builtin").live_grep()
+    Snacks.picker.grep()
 end, {
     desc = "Live grep",
 })
 
 vim.keymap.set("n", "<leader>fb", function()
-    require("telescope.builtin").buffers()
+    Snacks.picker.buffers()
 end, {
     desc = "Buffers",
 })
 
--- Neo-tree
-vim.keymap.set("n", "<leader>e", ":Neotree toggle filesystem left<CR>", {
+-- Explorer
+vim.keymap.set("n", "<leader>e", function()
+    Snacks.explorer()
+end, {
     silent = true,
-    desc = "Toggle Neo-tree",
+    desc = "Toggle explorer",
 })
 
 -- Formatear código
@@ -96,9 +98,9 @@ vim.keymap.set("n", "gd", vim.lsp.buf.definition, {
     desc = "Goto definition",
 })
 
--- LSP: Go to uses (references) usando Telescope
+-- LSP: Go to uses (references) usando Snacks picker
 vim.keymap.set("n", "gr", function()
-    require("telescope.builtin").lsp_references()
+    Snacks.picker.lsp_references()
 end, {
     desc = "Goto references",
 })
