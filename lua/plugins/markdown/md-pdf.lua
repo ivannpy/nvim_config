@@ -5,11 +5,12 @@ return {
     {
       "<leader>mp",
       function() require("md-pdf").convert_md_to_pdf() end,
-      desc = "Markdown → PDF (Skim)",
+      desc = "Markdown → PDF",
     },
   },
   opts = {
-    pdf_viewer = "skim",
+    -- En macOS se usa el visor por defecto (open); en WSL, SumatraPDF de Windows
+    preview_cmd = require("core.platform").is_wsl and require("core.platform").sumatra or nil,
     highlight = "pygments",  -- syntax highlighting en código
     toc = false,
   },

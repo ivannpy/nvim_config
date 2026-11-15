@@ -31,9 +31,24 @@ else
     if vim.fn.has("mac") == 1 then
         copy_cmd = "pbcopy"
         paste_cmd = "pbpaste"
-    elseif executable("clip.exe") then
-        copy_cmd = "clip.exe"
-        paste_cmd = "powershell.exe -NoProfile -Command Get-Clipboard"
+    elseif executable("win32yank.exe") then
+        -- WSL: win32yank maneja UTF-8 y saltos de línea correctamente
+        copy_cmd = { "win32yank.exe", "-i", "--crlf" }
+        paste_cmd = { "win32yank.exe", "-o", "--lf" }
+    elseif executable("powershell.exe") then
+        -- WSL sin win32yank: clip.exe rompe el UTF-8, así que se usa PowerShell
+        copy_cmd = {
+            "powershell.exe",
+            "-NoProfile",
+            "-Command",
+            "[Console]::InputEncoding=[Text.Encoding]::UTF8; Set-Clipboard -Value ([Console]::In.ReadToEnd())",
+        }
+        paste_cmd = {
+            "powershell.exe",
+            "-NoProfile",
+            "-Command",
+            "[Console]::OutputEncoding=[Text.Encoding]::UTF8; [Console]::Out.Write(((Get-Clipboard -Raw) -replace '\\r', ''))",
+        }
     elseif vim.env.WAYLAND_DISPLAY and executable("wl-copy") then
         copy_cmd = { "wl-copy", "--type", "text/plain" }
         paste_cmd = { "wl-paste", "--no-newline" }

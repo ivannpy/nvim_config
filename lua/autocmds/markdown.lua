@@ -1,4 +1,5 @@
-local is_mac = vim.fn.has("macunix") == 1
+local platform = require("core.platform")
+local is_mac = platform.is_mac
 
 local md_pdf_group = vim.api.nvim_create_augroup("MarkdownPDF", { clear = true })
 
@@ -23,7 +24,7 @@ vim.api.nvim_create_autocmd("BufWritePost", {
           if is_mac then
             vim.fn.jobstart({ "open", "-a", "Skim", output })
           else
-            vim.fn.jobstart({ "SumatraPDF", output })
+            vim.fn.jobstart({ platform.sumatra, output })
           end
         else
           vim.notify("Error al compilar PDF ✗", vim.log.levels.ERROR)

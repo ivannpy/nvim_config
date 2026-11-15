@@ -96,7 +96,8 @@ return {
         })
 
         -- Configuración para latexmk
-        local is_mac = vim.fn.has("macunix") == 1
+        local platform = require("core.platform")
+        local is_mac = platform.is_mac
         local forward_search_config
         if is_mac then
             forward_search_config = {
@@ -105,7 +106,7 @@ return {
             }
         else
             forward_search_config = {
-                executable = "SumatraPDF",
+                executable = platform.sumatra,
                 args = { "-forward-search", "%f", "%l", "%p" },
             }
         end

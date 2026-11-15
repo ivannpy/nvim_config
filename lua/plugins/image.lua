@@ -1,5 +1,13 @@
+-- En WSL (Windows Terminal) no hay protocolo kitty: solo se carga si la terminal lo soporta
+local platform = require("core.platform")
+local kitty_terminal = vim.env.KITTY_WINDOW_ID ~= nil
+    or vim.env.WEZTERM_EXECUTABLE ~= nil
+    or vim.env.TERM_PROGRAM == "ghostty"
+    or vim.env.TERM_PROGRAM == "WezTerm"
+
 return {
     "3rd/image.nvim",
+    cond = not platform.is_wsl or kitty_terminal,
     dependencies = {
         "nvim-lua/plenary.nvim",
     },

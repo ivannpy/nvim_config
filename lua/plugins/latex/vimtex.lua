@@ -2,7 +2,8 @@ return {
     "lervag/vimtex",
     lazy = false,
     init = function()
-        local is_mac = vim.fn.has("macunix") == 1
+        local platform = require("core.platform")
+        local is_mac = platform.is_mac
 
         vim.g.vimtex_compiler_method = "latexmk"
         vim.g.vimtex_quickfix_mode = 0
@@ -13,7 +14,7 @@ return {
             vim.g.vimtex_view_skim_activate = 1
         else
             vim.g.vimtex_view_method = "general"
-            vim.g.vimtex_view_general_viewer = "SumatraPDF"
+            vim.g.vimtex_view_general_viewer = platform.sumatra
             vim.g.vimtex_view_general_options = "-reuse-instance -forward-search @tex @line @pdf"
         end
 
