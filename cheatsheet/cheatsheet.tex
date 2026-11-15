@@ -73,7 +73,7 @@
 \begin{center}
 {\Huge\bfseries\color{accent} Neovim --- Hoja de referencia}\\[0.4em]
 {\large Configuración de Ivan --- \textbf{Neovim v0.12.6} (Release, LuaJIT 2.1)}\\[0.2em]
-{\small Generada el 13 de noviembre de 2026 y verificada contra los plugins instalados en esta máquina}
+{\small Generada el 14 de noviembre de 2026 y verificada contra los plugins instalados en esta máquina}
 \end{center}
 
 \subsection*{Cómo leer esta hoja}
@@ -90,9 +90,9 @@
 \subsection*{Versiones}
 \begin{itemize}
   \item \textbf{Neovim:} v0.12.6 (build Release, LuaJIT 2.1). Los atajos por defecto de LSP (\kk{gra}, \kk{grn}, \kk{grr}\ldots), el comando \kk{:lsp}, \kk{gc} y los atajos \kk{[b}/\kk{]b}/\kk{[<Space>} dependen de esta versión.
-  \item \textbf{Herramientas:} \kk{tree-sitter} CLI 0.27.2 --- rust-analyzer 0.3.2963 (Mason) --- \kk{latexmk}, \kk{pdflatex}, \kk{pandoc} y Skim para PDF.
+  \item \textbf{Herramientas:} \kk{tree-sitter} CLI 0.27.2 --- rust-analyzer 0.3.2963 (Mason) --- \kk{latexmk}, \kk{pdflatex} y Skim para PDF; Brave para el preview de Markdown.
   \item \textbf{Servidores LSP (Mason):} lua-language-server, pyright, ruff, rust-analyzer, texlab.
-  \item \textbf{Plugins} (commit y fecha del commit instalado):
+  \item \textbf{Plugins} (commit y fecha del commit instalado en esta Mac):
 \end{itemize}
 \begingroup\footnotesize
 \begin{center}
@@ -101,16 +101,15 @@
 \textbf{Plugin} & \textbf{Commit} & \textbf{Fecha} & \textbf{Plugin} & \textbf{Commit} & \textbf{Fecha} \\
 \midrule
 \texttt{lazy.nvim} & \texttt{306a055} & 2025-12-17 & \texttt{snacks.nvim} & \texttt{882c996} & 2026-05-25 \\
-\texttt{nvim-treesitter (main)} & \texttt{60c0f468} & 2026-11-12 & \texttt{render-markdown.nvim} & \texttt{8801162} & 2026-11-12 \\
-\texttt{vimtex} & \texttt{cedc0a17} & 2026-11-13 & \texttt{nvim-lspconfig} & \texttt{443d92c6} & 2026-11-10 \\
+\texttt{nvim-treesitter (main)} & \texttt{60c0f468} & 2026-11-12 & \texttt{vimtex} & \texttt{cedc0a17} & 2026-11-13 \\
+\texttt{markdown-preview.nvim} & \texttt{4230468} & 2026-11-08 & \texttt{nvim-lspconfig} & \texttt{443d92c6} & 2026-11-10 \\
 \texttt{mason.nvim} & \texttt{2a6940a} & 2026-06-11 & \texttt{mason-lspconfig.nvim} & \texttt{97ccf96} & 2026-11-10 \\
 \texttt{nvim-cmp} & \texttt{fe29aba} & 2026-11-05 & \texttt{gitsigns.nvim} & \texttt{dc7698f} & 2026-11-13 \\
 \texttt{vim-fugitive} & \texttt{3b753cf} & 2026-03-07 & \texttt{git-blame.nvim} & \texttt{5c536e2} & 2025-11-03 \\
 \texttt{trouble.nvim} & \texttt{bd67efe} & 2025-10-31 & \texttt{which-key.nvim} & \texttt{3aab214} & 2025-10-28 \\
 \texttt{toggleterm.nvim} & \texttt{50ea089} & 2024-12-30 & \texttt{nvim-ufo} & \texttt{ab3eb12} & 2026-01-11 \\
 \texttt{refactoring.nvim} & \texttt{ea18f97} & 2026-10-12 & \texttt{lualine.nvim} & \texttt{221ce6b} & 2026-05-31 \\
-\texttt{tokyonight.nvim} & \texttt{cdc07ac} & 2026-03-24 & \texttt{md-pdf.nvim} & \texttt{d0bab77} & 2026-01-11 \\
-\texttt{image.nvim} & \texttt{365e2ac} & 2026-09-05 & \texttt{nvim-autopairs} & \texttt{3172f40} & 2026-10-10 \\
+\texttt{tokyonight.nvim} & \texttt{cdc07ac} & 2026-03-24 & \texttt{nvim-autopairs} & \texttt{3172f40} & 2026-10-10 \\
 \texttt{indent-blankline.nvim} & \texttt{f1e186e} & 2026-09-04 &  & &  \\
 \bottomrule
 \end{tabular}
@@ -141,8 +140,8 @@
 \rg{\ld ri \mk}{Refactor: inline de variable.}{N}
 \rr{\ld tv \mk}{Abre/cierra la terminal Shell (horizontal, abajo).}{N}
 \rg{\ld tj \mk}{Abre/cierra \kk{jupyter notebook} en una terminal flotante (avisa si no hay venv activo).}{N}
-\rr{\ld mp \mk}{Convierte el Markdown actual a PDF con md-pdf y lo abre en Skim.}{.md}
-\rg{\ld mr \mk}{Activa/apaga el renderizado de Markdown (\kk{:RenderMarkdown toggle}).}{.md}
+\rr{\ld mp \mk}{Abre/cierra el preview del Markdown renderizado en el navegador (Brave por defecto).}{.md}
+\rg{NVIM\_MD\_BROWSER \mk}{Variable de entorno que cambia el navegador del preview sin editar la config.}{Shell}
 \rr{\ld xx \mk}{Trouble: diagnósticos de todo el proyecto.}{N}
 \rg{\ld xX \mk}{Trouble: diagnósticos solo del buffer actual.}{N}
 \rr{\ld cs \mk}{Trouble: símbolos del archivo.}{N, con LSP}
@@ -158,9 +157,8 @@
 \begin{cht}
 \rg{Guardar \kk{.py} \mk}{Formatea con Ruff (cliente LSP) antes de escribir.}{.py}
 \rr{Guardar \kk{.rs} \mk}{Formatea con rustfmt (vía rust-analyzer) antes de escribir; también ordena los \kk{use}.}{.rs}
-\rg{Guardar \kk{.md} \mk}{Compila con pandoc a PDF (\kk{pdflatex}, margen 2\,cm, MathJax) y abre Skim.}{.md}
-\rr{Guardar \kk{.tex} \mk}{texlab compila con \kk{latexmk} al guardar (\kk{onSave = true}).}{.tex}
-\rg{Abrir \kk{vim} sin argumentos \mk}{Muestra el dashboard de Snacks y el explorer a la izquierda.}{Inicio}
+\rg{Guardar \kk{.tex} \mk}{texlab compila con \kk{latexmk} al guardar (\kk{onSave = true}).}{.tex}
+\rr{Abrir \kk{vim} sin argumentos \mk}{Muestra el dashboard de Snacks y el explorer a la izquierda.}{Inicio}
 \end{cht}
 
 \subsection*{Dashboard de inicio (solo en la pantalla de inicio)}
@@ -822,24 +820,28 @@ Requiere el parser de treesitter del lenguaje (rust, lua, python\ldots).
 
 % =====================================================================
 \section{Markdown}
+El Markdown se ve \emph{renderizado en el navegador} con markdown-preview.nvim; dentro de nvim siempre ves el texto plano.
 
-\subsection{render-markdown.nvim}
-Renderiza \emph{dentro del buffer}: encabezados con fondo, listas con viñetas, tablas con bordes, código con bloque, checkboxes, citas, etc. Se carga solo en \kk{.md}. Con el cursor sobre una línea se muestra el texto original.
+\subsection{markdown-preview.nvim}
 \begin{cht}
-\rg{\ld mr \mk}{Alternar renderizado.}{.md}
-\rr{:RenderMarkdown toggle / enable / disable}{Alternar / activar / desactivar globalmente.}{.md}
-\rg{:RenderMarkdown buf\_toggle / buf\_enable / buf\_disable}{Lo mismo solo para el buffer actual.}{.md}
-\rr{:RenderMarkdown preview}{Mostrar el buffer renderizado en una ventana aparte.}{.md}
-\rg{:RenderMarkdown expand / contract}{Aumentar / reducir el margen donde se muestra el texto original.}{.md}
-\rr{:RenderMarkdown get / set / set\_buf}{Consultar o establecer el estado.}{.md}
-\rg{:RenderMarkdown debug / config / log}{Depuración: info del nodo, diferencias de configuración, abrir log.}{.md}
+\rg{\ld mp \mk}{Abrir/cerrar el preview en el navegador (Brave por defecto). Se actualiza mientras escribes y sincroniza el scroll.}{.md}
+\rr{:MarkdownPreview}{Abrir el preview del buffer actual.}{.md}
+\rg{:MarkdownPreviewStop}{Detener el preview y apagar el servidor.}{.md}
+\rr{:MarkdownPreviewToggle}{Abrir o detener (lo mismo que \ld mp).}{.md}
+\rg{:checkhealth mkdp}{Plataforma, versión del plugin y del binario del servidor.}{Todos}
+\rr{Qué renderiza}{Matemáticas con KaTeX (\kk{\$x\ca{}2\$}), diagramas (Mermaid, PlantUML, Graphviz, Chart.js\ldots), alertas, tablas, listas de tareas, notas al pie, emoji, front matter e imágenes locales.}{.md}
 \end{cht}
 
-\subsection{md-pdf.nvim, pandoc e imágenes}
+\subsection{Cambiar de navegador y otras opciones}
 \begin{cht}
-\rg{\ld mp \mk}{Convertir el \kk{.md} actual a PDF y abrirlo en Skim (resaltado de código estilo \kk{pygments}).}{.md}
-\rr{Guardar \kk{.md} \mk}{Además, tu autocmd regenera \kk{<archivo>.pdf} con pandoc y abre Skim cada vez que guardas.}{.md}
-\rg{image.nvim (backend \kk{kitty})}{Muestra imágenes dentro de nvim (PNG, JPG, GIF, WebP) y las de Markdown; funciona en terminales con protocolo kitty como WezTerm. Al abrir una imagen, se muestra directamente.}{.md, imágenes}
+\rg{\kk{lua/plugins/markdown/markdown-preview.lua} \mk}{Tabla \kk{browsers} al inicio del archivo, con un navegador por sistema (\kk{mac}, \kk{wsl}, \kk{linux}). Cambia ahí el nombre: \kk{"Brave Browser"}, \kk{"Google Chrome"}, \kk{"Firefox"}\ldots}{Config}
+\rr{NVIM\_MD\_BROWSER \mk}{Variable de entorno con prioridad sobre la tabla: \kk{NVIM\_MD\_BROWSER="Google Chrome" nvim README.md}.}{Shell}
+\rg{browser = "Nombre"}{Nombre de la aplicación: macOS lo abre con \kk{open -a}; Linux lo ejecuta como programa; en WSL prueba primero Linux y luego \kk{start} de Windows.}{opts}
+\rr{browser = \{ "cmd", "arg"\ldots\}}{Comando con argumentos; la URL se añade al final. Ventana nueva en Mac: \kk{\{ "open", "-na", "Brave Browser", "--args", "--new-window" \}}.}{opts}
+\rg{auto\_close, theme, theme\_css, echo\_preview\_url}{Cerrar o no el preview al cambiar de buffer; \kk{"dark"}/\kk{"light"}; CSS propio; mostrar siempre la URL.}{opts}
+\rr{preview\_options.sync\_scroll\_type / front\_matter}{Sincronización del scroll (\kk{"middle"}, \kk{"top"}, \kk{"relative"}) y qué hacer con el YAML inicial (\kk{"hide"}, \kk{"panel"}, \kk{"raw"}).}{opts}
+\rg{port / open\_to\_the\_world}{Puerto fijo del servidor / servir a toda la red (la URL lleva un token).}{opts}
+\rr{Si el navegador no abre}{El mensaje de error incluye la URL para abrirla a mano.}{Todos}
 \end{cht}
 
 % =====================================================================
@@ -980,14 +982,15 @@ Tu configuración busca actualizaciones en segundo plano sin notificar (\kk{chec
 \rr{:checkhealth vim.lsp}{Servidores LSP, capacidades y observadores.}{C}
 \rg{:checkhealth vim.treesitter}{Parsers y queries instalados.}{C}
 \rr{:checkhealth mason}{Dependencias para instalar servidores.}{C}
-\rg{:checkhealth snacks}{Estado de snacks (por ejemplo, soporte de imágenes).}{C}
+\rg{:checkhealth snacks}{Estado de los módulos de snacks activados.}{C}
 \rr{:checkhealth vim.deprecated}{APIs obsoletas usadas por tu config.}{C}
+\rg{:checkhealth mkdp}{Servidor y plataforma de markdown-preview.}{C}
 \end{cht}
 
 
 % =====================================================================
 \section{Mac y Windows: diferencias y trampas}
-Tu config detecta el sistema: en Mac usa \kk{pbcopy}/\kk{pbpaste} y Skim; en Linux/WSL/Windows usa \kk{clip.exe} o \kk{xclip}/\kk{wl-copy} y SumatraPDF; por SSH usa OSC~52. Lo marcado como \emph{(verificado)} se probó en esta Mac; lo demás es conocimiento general y puede variar con tu terminal.
+Tu entorno real es macOS y WSL (\kk{core/platform.lua}); lo de Windows nativo es solo orientativo. Tu config detecta el sistema: en Mac usa \kk{pbcopy}/\kk{pbpaste} y Skim; en Linux/WSL/Windows usa \kk{clip.exe} o \kk{xclip}/\kk{wl-copy} y SumatraPDF; por SSH usa OSC~52. Lo marcado como \emph{(verificado)} se probó en esta Mac; lo demás es conocimiento general y puede variar con tu terminal.
 
 \subsection{Teclado y terminal}
 \begin{cht}
@@ -1007,9 +1010,10 @@ Tu config detecta el sistema: en Mac usa \kk{pbcopy}/\kk{pbpaste} y Skim; en Lin
 \rr{Fin de línea CRLF}{En Windows verás \kk{\ca{}M} al final de las líneas de archivos CRLF. \kk{:set ff?} muestra el formato; \kk{:e ++ff=dos} lo recarga como DOS; \kk{:set ff=unix} convierte a LF; \kk{:\%s/\bs r//g} quita los \kk{\ca{}M}.}{Windows}
 \rg{Separadores de ruta}{Mac y WSL usan \kk{/}; Windows nativo usa \kk{\bs} (nvim acepta \kk{/}). En WSL las unidades están en \kk{/mnt/c/\ldots}.}{Todos}
 \rr{Shell de \kk{:terminal} y toggleterm}{Usan \kk{vim.o.shell}: zsh en Mac, bash/zsh en WSL, PowerShell o cmd en Windows nativo. Comprueba con \kk{:set shell?}.}{Todos}
-\rg{Visor de PDF}{Tus atajos de LaTeX y Markdown abren Skim en Mac y SumatraPDF (debe estar en el \kk{PATH}) en Windows/WSL.}{Todos}
-\rr{gx, \kk{o} del explorer}{Abren con el programa del sistema: \kk{open} en Mac, \kk{xdg-open} en Linux, el asociado en Windows.}{Todos}
-\rg{Herramientas externas}{\kk{pandoc}, \kk{latexmk}, \kk{rustfmt}, \kk{jupyter} y \kk{tree-sitter} deben estar en el \kk{PATH} de cada sistema; falta \kk{jupyter} en tu Mac.}{Todos}
+\rg{Visor de PDF}{Tus atajos de LaTeX abren Skim en Mac y SumatraPDF en WSL (\kk{core/platform.lua} lo resuelve).}{Todos}
+\rr{Navegador del preview}{En WSL, \kk{browser = "brave"} prueba un \kk{brave} de Linux y si no existe usa \kk{start brave} de Windows. No lo he podido probar en WSL.}{WSL}
+\rg{gx, \kk{o} del explorer}{Abren con el programa del sistema: \kk{open} en Mac, \kk{xdg-open} en Linux, el asociado en Windows.}{Todos}
+\rg{Herramientas externas}{\kk{latexmk}, \kk{rustfmt}, \kk{jupyter} y \kk{tree-sitter} deben estar en el \kk{PATH} de cada sistema; falta \kk{jupyter} en tu Mac.}{Todos}
 \rr{Filtros \kk{:\%!cmd}}{Dependen del sistema: \kk{sort}, \kk{jq} y \kk{awk} no existen igual en Windows nativo (sí en WSL).}{Windows}
 \end{cht}
 
@@ -1037,8 +1041,7 @@ Tu config detecta el sistema: en Mac usa \kk{pbcopy}/\kk{pbpaste} y Skim; en Lin
   \item \textbf{\ld z\ldots} también es prefijo: \ld zt, \ld zo, \ld zm, \ld zr, \ld zz y \ld zf.
   \item Como \lld\ y \ld\ son ambas Espacio, los atajos de vimtex (\kk{Espacio l l}) y los tuyos comparten tecla. which-key te ayuda mostrando las opciones al pulsar Espacio.
   \item Los pliegues empiezan todos abiertos; para plegar usa \kk{za}/\kk{zc} o \ld zm.
-  \item \textbf{Guardar un \kk{.md}} dispara pandoc y abre Skim cada vez; para guardar sin eso usa \kk{:noautocmd w}.
-  \item \textbf{Guardar \kk{.py}/\kk{.rs}} formatea el archivo; para saltarte el formato una vez usa \kk{:noautocmd w}.
+    \item \textbf{Guardar \kk{.py}/\kk{.rs}} formatea el archivo; para saltarte el formato una vez usa \kk{:noautocmd w}.
   \item \kk{:Lazy sync} también limpia plugins que ya no estén en tu configuración; prefiere \kk{:Lazy update} o \kk{:Lazy install} si no quieres borrar nada.
   \item \kk{Snacks.lazygit()} necesita \kk{lazygit} (no instalado); \kk{:ToggleTermJupyter} necesita \kk{jupyter} en el PATH (no instalado).
 \end{itemize}
