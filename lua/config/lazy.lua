@@ -19,7 +19,6 @@ require("lazy").setup({
         { import = "plugins.themes" },
         { import = "plugins.git" },
         { import = "plugins.latex" },
-        { import = "plugins.markdown" },
     },
 
     checker = {
