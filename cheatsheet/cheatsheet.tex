@@ -90,7 +90,7 @@
 \subsection*{Versiones}
 \begin{itemize}
   \item \textbf{Neovim:} v0.12.6 (build Release, LuaJIT 2.1). Los atajos por defecto de LSP (\kk{gra}, \kk{grn}, \kk{grr}\ldots), el comando \kk{:lsp}, \kk{gc} y los atajos \kk{[b}/\kk{]b}/\kk{[<Space>} dependen de esta versión.
-  \item \textbf{Herramientas:} \kk{tree-sitter} CLI 0.27.2 --- rust-analyzer 0.3.2963 (Mason) --- \kk{latexmk}, \kk{pdflatex} y Skim para PDF; Brave para el preview de Markdown.
+  \item \textbf{Herramientas:} \kk{tree-sitter} CLI 0.27.2 --- rust-analyzer 0.3.2963 (Mason) --- \kk{latexmk}, \kk{pdflatex} y Skim para PDF.
   \item \textbf{Servidores LSP (Mason):} lua-language-server, pyright, ruff, rust-analyzer, texlab.
   \item \textbf{Plugins} (commit y fecha del commit instalado en esta Mac):
 \end{itemize}
@@ -102,15 +102,14 @@
 \midrule
 \texttt{lazy.nvim} & \texttt{306a055} & 2025-12-17 & \texttt{snacks.nvim} & \texttt{882c996} & 2026-05-25 \\
 \texttt{nvim-treesitter (main)} & \texttt{60c0f468} & 2026-11-12 & \texttt{vimtex} & \texttt{cedc0a17} & 2026-11-13 \\
-\texttt{markdown-preview.nvim} & \texttt{4230468} & 2026-11-08 & \texttt{nvim-lspconfig} & \texttt{443d92c6} & 2026-11-10 \\
-\texttt{mason.nvim} & \texttt{2a6940a} & 2026-06-11 & \texttt{mason-lspconfig.nvim} & \texttt{97ccf96} & 2026-11-10 \\
-\texttt{nvim-cmp} & \texttt{fe29aba} & 2026-11-05 & \texttt{gitsigns.nvim} & \texttt{dc7698f} & 2026-11-13 \\
-\texttt{vim-fugitive} & \texttt{3b753cf} & 2026-03-07 & \texttt{git-blame.nvim} & \texttt{5c536e2} & 2025-11-03 \\
-\texttt{trouble.nvim} & \texttt{bd67efe} & 2025-10-31 & \texttt{which-key.nvim} & \texttt{3aab214} & 2025-10-28 \\
-\texttt{toggleterm.nvim} & \texttt{50ea089} & 2024-12-30 & \texttt{nvim-ufo} & \texttt{ab3eb12} & 2026-01-11 \\
-\texttt{refactoring.nvim} & \texttt{ea18f97} & 2026-10-12 & \texttt{lualine.nvim} & \texttt{221ce6b} & 2026-05-31 \\
-\texttt{tokyonight.nvim} & \texttt{cdc07ac} & 2026-03-24 & \texttt{nvim-autopairs} & \texttt{3172f40} & 2026-10-10 \\
-\texttt{indent-blankline.nvim} & \texttt{f1e186e} & 2026-09-04 &  & &  \\
+\texttt{nvim-lspconfig} & \texttt{443d92c6} & 2026-11-10 & \texttt{mason.nvim} & \texttt{2a6940a} & 2026-06-11 \\
+\texttt{mason-lspconfig.nvim} & \texttt{97ccf96} & 2026-11-10 & \texttt{nvim-cmp} & \texttt{fe29aba} & 2026-11-05 \\
+\texttt{gitsigns.nvim} & \texttt{dc7698f} & 2026-11-13 & \texttt{vim-fugitive} & \texttt{3b753cf} & 2026-03-07 \\
+\texttt{git-blame.nvim} & \texttt{5c536e2} & 2025-11-03 & \texttt{trouble.nvim} & \texttt{bd67efe} & 2025-10-31 \\
+\texttt{which-key.nvim} & \texttt{3aab214} & 2025-10-28 & \texttt{toggleterm.nvim} & \texttt{50ea089} & 2024-12-30 \\
+\texttt{nvim-ufo} & \texttt{ab3eb12} & 2026-01-11 & \texttt{refactoring.nvim} & \texttt{ea18f97} & 2026-10-12 \\
+\texttt{lualine.nvim} & \texttt{221ce6b} & 2026-05-31 & \texttt{tokyonight.nvim} & \texttt{cdc07ac} & 2026-03-24 \\
+\texttt{nvim-autopairs} & \texttt{3172f40} & 2026-10-10 & \texttt{indent-blankline.nvim} & \texttt{f1e186e} & 2026-09-04 \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -140,8 +139,6 @@
 \rg{\ld ri \mk}{Refactor: inline de variable.}{N}
 \rr{\ld tv \mk}{Abre/cierra la terminal Shell (horizontal, abajo).}{N}
 \rg{\ld tj \mk}{Abre/cierra \kk{jupyter notebook} en una terminal flotante (avisa si no hay venv activo).}{N}
-\rr{\ld mp \mk}{Abre/cierra el preview del Markdown renderizado en el navegador (Brave por defecto).}{.md}
-\rg{NVIM\_MD\_BROWSER \mk}{Variable de entorno que cambia el navegador del preview sin editar la config.}{Shell}
 \rr{\ld xx \mk}{Trouble: diagnósticos de todo el proyecto.}{N}
 \rg{\ld xX \mk}{Trouble: diagnósticos solo del buffer actual.}{N}
 \rr{\ld cs \mk}{Trouble: símbolos del archivo.}{N, con LSP}
@@ -819,31 +816,6 @@ Requiere el parser de treesitter del lenguaje (rust, lua, python\ldots).
 \end{cht}
 
 % =====================================================================
-\section{Markdown}
-El Markdown se ve \emph{renderizado en el navegador} con markdown-preview.nvim; dentro de nvim siempre ves el texto plano.
-
-\subsection{markdown-preview.nvim}
-\begin{cht}
-\rg{\ld mp \mk}{Abrir/cerrar el preview en el navegador (Brave por defecto). Se actualiza mientras escribes y sincroniza el scroll.}{.md}
-\rr{:MarkdownPreview}{Abrir el preview del buffer actual.}{.md}
-\rg{:MarkdownPreviewStop}{Detener el preview y apagar el servidor.}{.md}
-\rr{:MarkdownPreviewToggle}{Abrir o detener (lo mismo que \ld mp).}{.md}
-\rg{:checkhealth mkdp}{Plataforma, versión del plugin y del binario del servidor.}{Todos}
-\rr{Qué renderiza}{Matemáticas con KaTeX (\kk{\$x\ca{}2\$}), diagramas (Mermaid, PlantUML, Graphviz, Chart.js\ldots), alertas, tablas, listas de tareas, notas al pie, emoji, front matter e imágenes locales.}{.md}
-\end{cht}
-
-\subsection{Cambiar de navegador y otras opciones}
-\begin{cht}
-\rg{\kk{lua/plugins/markdown/markdown-preview.lua} \mk}{Tabla \kk{browsers} al inicio del archivo, con un navegador por sistema (\kk{mac}, \kk{wsl}, \kk{linux}). Cambia ahí el nombre: \kk{"Brave Browser"}, \kk{"Google Chrome"}, \kk{"Firefox"}\ldots}{Config}
-\rr{NVIM\_MD\_BROWSER \mk}{Variable de entorno con prioridad sobre la tabla: \kk{NVIM\_MD\_BROWSER="Google Chrome" nvim README.md}.}{Shell}
-\rg{browser = "Nombre"}{Nombre de la aplicación: macOS lo abre con \kk{open -a}; Linux lo ejecuta como programa; en WSL prueba primero Linux y luego \kk{start} de Windows.}{opts}
-\rr{browser = \{ "cmd", "arg"\ldots\}}{Comando con argumentos; la URL se añade al final. Ventana nueva en Mac: \kk{\{ "open", "-na", "Brave Browser", "--args", "--new-window" \}}.}{opts}
-\rg{auto\_close, theme, theme\_css, echo\_preview\_url}{Cerrar o no el preview al cambiar de buffer; \kk{"dark"}/\kk{"light"}; CSS propio; mostrar siempre la URL.}{opts}
-\rr{preview\_options.sync\_scroll\_type / front\_matter}{Sincronización del scroll (\kk{"middle"}, \kk{"top"}, \kk{"relative"}) y qué hacer con el YAML inicial (\kk{"hide"}, \kk{"panel"}, \kk{"raw"}).}{opts}
-\rg{port / open\_to\_the\_world}{Puerto fijo del servidor / servir a toda la red (la URL lleva un token).}{opts}
-\rr{Si el navegador no abre}{El mensaje de error incluye la URL para abrirla a mano.}{Todos}
-\end{cht}
-
 % =====================================================================
 \section{LaTeX (vimtex + texlab)}
 Recuerda: tu \lld\ es \textbf{Espacio}, así que \kk{\lld ll} = \kk{Espacio l l}. Compilador \kk{latexmk}, visor Skim con sincronización (macOS) o SumatraPDF (Windows/WSL). Las compilaciones corren también por texlab al guardar.
@@ -984,7 +956,6 @@ Tu configuración busca actualizaciones en segundo plano sin notificar (\kk{chec
 \rr{:checkhealth mason}{Dependencias para instalar servidores.}{C}
 \rg{:checkhealth snacks}{Estado de los módulos de snacks activados.}{C}
 \rr{:checkhealth vim.deprecated}{APIs obsoletas usadas por tu config.}{C}
-\rg{:checkhealth mkdp}{Servidor y plataforma de markdown-preview.}{C}
 \end{cht}
 
 
@@ -1011,7 +982,6 @@ Tu entorno real es macOS y WSL (\kk{core/platform.lua}); lo de Windows nativo es
 \rg{Separadores de ruta}{Mac y WSL usan \kk{/}; Windows nativo usa \kk{\bs} (nvim acepta \kk{/}). En WSL las unidades están en \kk{/mnt/c/\ldots}.}{Todos}
 \rr{Shell de \kk{:terminal} y toggleterm}{Usan \kk{vim.o.shell}: zsh en Mac, bash/zsh en WSL, PowerShell o cmd en Windows nativo. Comprueba con \kk{:set shell?}.}{Todos}
 \rg{Visor de PDF}{Tus atajos de LaTeX abren Skim en Mac y SumatraPDF en WSL (\kk{core/platform.lua} lo resuelve).}{Todos}
-\rr{Navegador del preview}{En WSL, \kk{browser = "brave"} prueba un \kk{brave} de Linux y si no existe usa \kk{start brave} de Windows. No lo he podido probar en WSL.}{WSL}
 \rg{gx, \kk{o} del explorer}{Abren con el programa del sistema: \kk{open} en Mac, \kk{xdg-open} en Linux, el asociado en Windows.}{Todos}
 \rg{Herramientas externas}{\kk{latexmk}, \kk{rustfmt}, \kk{jupyter} y \kk{tree-sitter} deben estar en el \kk{PATH} de cada sistema; falta \kk{jupyter} en tu Mac.}{Todos}
 \rr{Filtros \kk{:\%!cmd}}{Dependen del sistema: \kk{sort}, \kk{jq} y \kk{awk} no existen igual en Windows nativo (sí en WSL).}{Windows}
